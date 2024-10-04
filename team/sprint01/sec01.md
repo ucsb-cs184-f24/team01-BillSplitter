@@ -4,4 +4,5 @@
 * Table of items
 * List of people
 * way to assign people to items (Maybe give each person a color and color bars appear next to items they are assigned)
+* Set up the databases for the app
 
