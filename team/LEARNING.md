@@ -8,3 +8,5 @@ electronic health record data, and one in the financial transaction space, where
 Nadav: knowledge in react native and incorporating different APIs into mobile apps from CS 148 as well as scrum and agile development. Worked with expo in order to create mobile apps in react native
 
 Alex: Full Stack dev in react, do leetcodes in python, familiar with calling LLM apis
+
+Yerassyl: I have a strong background in Python and C++. I have limited knowledge of mobile development but I have a great knowledge using web development for projects. 
