@@ -6,3 +6,5 @@ Olivia - My incoming knowledge and interests revolve around ML. I have two inter
 electronic health record data, and one in the financial transaction space, where I implemented a scam detection model to prevent fraud in Apple Wallet. I have limited app development experience from a previous 24-hour hackathon, where I mainly helped with the backend for an ingredients-to-recipe app, and from CS156.
 
 Nadav: knowledge in react native and incorporating different APIs into mobile apps from CS 148 as well as scrum and agile development. Worked with expo in order to create mobile apps in react native
+
+Alex: Full Stack dev in react, do leetcodes in python, familiar with calling LLM apis
