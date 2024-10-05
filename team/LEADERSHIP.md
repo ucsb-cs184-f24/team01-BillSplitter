@@ -1,6 +1,6 @@
-Team member roles:
+Team member roles: <br>
 
-Aneesh - scribe 
-Yerassyl - scrum master
-Alex - product owner
+Aneesh - scribe <br>
+Yerassyl - scrum master <br>
+Alex - product owner <br>
 
