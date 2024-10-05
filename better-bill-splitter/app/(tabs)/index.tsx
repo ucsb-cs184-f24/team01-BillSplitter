@@ -23,7 +23,11 @@ interface Person {
 
 const App: React.FC = () => {
   let itemId = 0
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[]>([
+    {id: 1, name: 'rice', price: 10},
+    {id: 2, name: 'eggs', price: 20},
+    {id: 3, name: 'soda', price: 30}
+  ]);
   const [people, setPeople] = useState<Person[]>([]);
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState('#000000'); 
@@ -36,7 +40,7 @@ const App: React.FC = () => {
 
   const addPerson = () => {
     if (newName && newColor) {
-      setPeople([...people, { name: newItemName, color: newColor, assignedItems: [] }]);
+      setPeople([...people, { name: newName, color: newColor, assignedItems: [] }]);
       setNewName('');
       setNewColor('#000000');
     }
@@ -44,7 +48,7 @@ const App: React.FC = () => {
 
   const addItems = () => {
     if (newName && newColor) {
-      setItems([...items, { id: itemId, name: newName,  price: newPrice }]);
+      setItems([...items, { id: itemId, name: newItemName,  price: newPrice }]);
       setNewName('');
       setNewPrice(0);
     }
