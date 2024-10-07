@@ -5,6 +5,7 @@ Bill Splitter Application
 # Setup 
 ## Enviroment
 see: https://reactnative.dev/docs/set-up-your-environment for more in-depth guide
+* clone repo
 * brew install node
 * brew install watchman
 * install x code from app store(for ios simulator, idk probaly can get the simulator without xcode but thats how I did it)
