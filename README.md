@@ -14,4 +14,4 @@ see: https://reactnative.dev/docs/set-up-your-environment for more in-depth guid
 * cd better-bill-splitter
 * yarn install 
 * yarn start
-* to run on iphone: scan qr code with camera app and openup in expo go
+* to run on iphone: scan qr code with camera app and openup in expo go have to be on the same wifi as computer
