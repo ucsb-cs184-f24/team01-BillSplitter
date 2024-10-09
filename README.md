@@ -1,5 +1,5 @@
 # team1
-Bill Splitter Application
+Bill Splitter Application built using expo and react native. The app will allow users to easily split bills and expenses with other users by forming groups for specific expenses, and keep track of what they owe each person.
 
 
 # Setup 
