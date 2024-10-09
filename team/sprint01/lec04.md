@@ -16,46 +16,16 @@ Joseph: Zoom
 
 Yerassy: Present
 
-## Assigning Tasks
-Joseph Li: Will work on the database, thinking of using MongoDB 
+## Task Updates
 
-Adil/Aneesh: Will work to create the Oauth, may use Firebase since it provides an easy way to handle user authentication with email/password, Google, Facebook, or phone authentication.
+- **Joseph Li**: Still focusing on the database, exploring MongoDB as a potential solution, while also contributing to other areas of development as needed.
+- **Adil/Aneesh**: Working on the creation of OAuth, considering Firebase for user authentication (via email/password, Google, Facebook, or phone), while also collaborating on other aspects of the project. Ideally, want to meet with Joseph at some point this weekend to set everything up
+- **Olivia/Nadav**: Working on the Image-to-Text API, evaluating existing APIs like Google Cloud Vision or OCR.space, while also supporting other team efforts. Olivia will be at Grace Hopper this weekend so she will work remotely to get this done
+- **Alex/Yerassyl**: Still working on the design tasks, contributing to feature development and integration across the project.
 
-Olivia/Nadav: Image to text API. There are exisiting API's that exist such as Google Cloud Vision API or OCR.space API
+## Things to Consider
 
-Alex/Yerassyl: Design
+Continue brainstorming features, allocating tasks across all group members to ensure everyone contributes to various areas. Start with a minimal viable product and expand based on time management and progress.
 
-## Things to think about
-Brainstorm features and split them up amongst group members, try to start minimal, then continue to build up based on time management
 
-# App Design Flow
-
-## 1. Firebase Authentication Integration
-- **Sign Up / Log In**: Users can create an account or log in using Firebase Authentication.
-
-## 2. Home Screen
-- **Groups Overview**: Displays a list of groups the user belongs to.
-- **Create or Add Friends**: Button to create a new group or add friends.
-
-## 3. Group Screen
-- **Members List**: Displays all members in the group.
-- **Past Bills**: Shows past bills within the group.
-- **Add a New Bill**: Button to add a new bill.
-- **Bill Splitting**: Integrates with an Image-to-Text API to split the bill automatically.
-  - **Split Amounts**: Shows the calculated amount for each member.
-  - **Settle Payments**: Ability to mark payments as settled.
-
-## 4. Friends Screen
-- **Search for Friends**: Users can search for friends by email or phone number.
-- **Invite Friends**: Option to invite friends to the app or to groups.
-
-## 5. Add Bill Screen
-- **Capture Bill**: Use the device’s camera to take a photo of the bill.
-- **Bill Processing**: Submit the photo for processing and parsing.
-- **Manual Adjustment**: Users can manually adjust the parsed bill amount before splitting.
-
-## 6. Real-Time Updates
-- **Firestore Integration**: Utilize Firestore's real-time listeners to:
-  - Automatically update the UI when new bills are added.
-  - Reflect real-time updates to group data.
 
