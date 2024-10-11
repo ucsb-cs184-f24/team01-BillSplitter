@@ -16,8 +16,11 @@ Joseph: I have a background in Java backend development using Springboot, and ha
 
 
 ## Resources for react native
-
+Yerassyl posted
 https://ucsb-cs184-f24.slack.com/archives/C07QZBBNBU7/p1728667529207999
-
+Nadav posted
 https://ucsb-cs184-f24.slack.com/archives/C07QZBBNBU7/p1728667539533839
+Alex posted
+
+Adil, Aneesh, Olivia, Joseph liked the posts
 
