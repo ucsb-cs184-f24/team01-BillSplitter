@@ -12,3 +12,12 @@ Alex: Full Stack dev in react, do leetcodes in python, familiar with calling LLM
 Yerassyl: I have a strong background in Python and C++. I have limited knowledge of mobile development but I have a great knowledge using web development for projects. 
 
 Joseph: I have a background in Java backend development using Springboot, and have also done work using typescript and angular but forgot most of it. I have done personal projects in python. I'd like to get into ml/ai and create an LLM but that seems a bit out of reach as my math fundamentals are terrible. 
+
+
+
+## Resources for react native
+
+https://ucsb-cs184-f24.slack.com/archives/C07QZBBNBU7/p1728667529207999
+
+https://ucsb-cs184-f24.slack.com/archives/C07QZBBNBU7/p1728667539533839
+
