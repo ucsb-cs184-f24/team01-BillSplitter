@@ -24,7 +24,7 @@ Alex posted
 
 Adil, Aneesh, Olivia, Joseph liked the posts
 
-## React Native Benefits and Challenges
+## React Native Benefits and Challenges (updated 10/11)
 
 ### Benefits
 * cross platform compatibility
