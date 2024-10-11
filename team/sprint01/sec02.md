@@ -25,6 +25,7 @@ Yerassy: Present
 
 ## Kanban Board
 We created kanbad board and assigned tasks to every single person in the group. 
+https://github.com/orgs/ucsb-cs184-f24/projects/10
 
 
 ## Current view of the app
