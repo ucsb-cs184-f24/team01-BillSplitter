@@ -24,3 +24,16 @@ Alex posted
 
 Adil, Aneesh, Olivia, Joseph liked the posts
 
+## React Native Benefits and Challenges
+
+### Benefits
+* cross platform compatibility
+* many 3rd party libraries and large ecosystem
+* very popular so lots of documentation and tutorials
+
+### Challenges
+* limited access to native APIs
+* inconsistencies across platforms
+* depending mostly on 3rd party libraries
+
+
