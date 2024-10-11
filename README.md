@@ -16,3 +16,10 @@ see: https://reactnative.dev/docs/set-up-your-environment for more in-depth guid
 * yarn install 
 * yarn start
 * to run on iphone: scan qr code with camera app and openup in expo go have to be on the same wifi as computer
+
+
+## Task Updates
+
+- **Joseph Li, Adil, Aneesh**: Create a Firebase project to do user authentication (via email/password, Google, Facebook, or phone)
+- **Olivia/Nadav**: Researche the Image-to-Text API deciding between Google Cloud Vision or OCR.space, trying to understand the use cases of each to see which one would be better for the project. Olivia is working remotely with Nadav to get this done
+- **Alex/Yerassyl**: Work on the design tasks, contributing to feature development and integration across the project. (Yera - navigation) 
