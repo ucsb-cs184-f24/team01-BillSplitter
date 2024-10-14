@@ -36,13 +36,13 @@ const App: React.FC = () => {
       {/* List of Items */}
       <ItemList 
         items={items} 
-        assignItemToPerson={assignItemToPerson} 
+        onAssignItemToPerson={assignItemToPerson} 
       />
       
       {/* List of People and their assigned items */}
       <PeopleList 
         people={people} 
-        setSelectedPerson={setSelectedPerson} 
+        onSelectPerson={setSelectedPerson} 
       />
 
       {/* Button to open the modal to add a new person */}
@@ -54,7 +54,7 @@ const App: React.FC = () => {
       {/* Modal for adding a new person */}
       <AddPersonModal 
         visible={modalVisible} 
-        addPerson={addPerson} 
+        onAddPerson={addPerson} 
         onClose={() => setModalVisible(false)} 
       />
     </View>

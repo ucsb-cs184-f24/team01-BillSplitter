@@ -5,10 +5,10 @@ import { Person } from './types';
 
 interface Props {
   people: Person[];
-  setSelectedPerson: (name: string) => void;
+  onSelectPerson: (name: string) => void;
 }
 
-const PeopleList: React.FC<Props> = ({ people, setSelectedPerson }) => {
+const PeopleList: React.FC<Props> = ({ people, onSelectPerson }) => {
   return (
     <View style={styles.addPersonContainer}>
       <Text style={styles.header}>Assigned People</Text>
@@ -16,7 +16,7 @@ const PeopleList: React.FC<Props> = ({ people, setSelectedPerson }) => {
         data={people}
         keyExtractor={(person, index) => index.toString()}
         renderItem={({ item }) => (
-          <PersonItem person={item} onSelect={setSelectedPerson} />
+          <PersonItem person={item} onSelect={onSelectPerson} />
         )}
       />
     </View>

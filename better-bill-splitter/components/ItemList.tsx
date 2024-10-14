@@ -5,17 +5,17 @@ import ItemRow, { Item } from './ItemRow';
 
 interface Props {
   items: Item[];
-  assignItemToPerson: (item: Item) => void;
+  onAssignItemToPerson: (item: Item) => void;
 }
 
-const ItemList: React.FC<Props> = ({ items, assignItemToPerson }) => {
+const ItemList: React.FC<Props> = ({ items, onAssignItemToPerson }) => {
   return (
     <View style={styles.itemsContainer}>
       <Text style={styles.header}>Items</Text>
       <FlatList
         data={items}
         keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => <ItemRow item={item} assignItemToPerson={assignItemToPerson} />}
+        renderItem={({ item }) => <ItemRow item={item} assignItemToPerson={onAssignItemToPerson} />}
       />
     </View>
   );

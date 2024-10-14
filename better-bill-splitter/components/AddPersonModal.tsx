@@ -4,15 +4,15 @@ import { View, Text, TextInput, Button, StyleSheet, Modal } from 'react-native';
 interface Props {
   visible: boolean;
   onClose: () => void;
-  addPerson: (name: string, color: string) => void;
+  onAddPerson: (name: string, color: string) => void;
 }
 
-const AddPersonModal: React.FC<Props> = ({ visible, onClose, addPerson }) => {
+const AddPersonModal: React.FC<Props> = ({ visible, onClose, onAddPerson }) => {
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState('#000000');
 
   const handleAdd = () => {
-    addPerson(newName, newColor);
+    onAddPerson(newName, newColor);
     setNewName('');
     setNewColor('#000000');
     onClose();
