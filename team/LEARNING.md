@@ -21,8 +21,10 @@ https://ucsb-cs184-f24.slack.com/archives/C07QZBBNBU7/p1728667529207999
 Nadav posted
 https://ucsb-cs184-f24.slack.com/archives/C07QZBBNBU7/p1728667539533839
 Alex posted
+https://ucsb-cs184-f24.slack.com/archives/C07QZBBNBU7/p1728942717778179
+Adil posted
 
-Adil, Aneesh, Olivia, Joseph liked the posts
+Aneesh, Olivia, Joseph liked the posts
 
 ## React Native Benefits and Challenges (updated 10/11)
 
