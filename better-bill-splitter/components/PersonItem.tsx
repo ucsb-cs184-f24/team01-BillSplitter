@@ -8,7 +8,7 @@ interface Props {
 }
 
 const PersonItem: React.FC<Props> = ({ person, onSelect }) => {
-  const totalAssignedPrice = person.assignedItems.reduce((sum, i) => sum + i.price, 0);
+  const totalAssignedPrice = person.assignedItems.reduce((sum, i) => sum + (i.price / i.assignedPeople.length), 0);
   const totalItemsAssigned = person.assignedItems.length;
 
   return (

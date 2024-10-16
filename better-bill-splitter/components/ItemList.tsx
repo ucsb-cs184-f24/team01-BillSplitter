@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, FlatList, StyleSheet, Text } from 'react-native';
-import ItemRow, { Item } from './ItemRow';
+import ItemRow from './ItemRow';
+import { Item } from './types'
 
-
-interface Props {
+export interface Props {
   items: Item[];
   onAssignItemToPerson: (item: Item) => void;
 }

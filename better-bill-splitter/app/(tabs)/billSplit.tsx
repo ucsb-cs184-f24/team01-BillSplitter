@@ -7,26 +7,37 @@ import { Item, Person } from '../../components/types';
 
 const App: React.FC = () => {
   const [items, setItems] = useState<Item[]>([
-    { id: 1, name: 'rice', price: 10 },
-    { id: 2, name: 'eggs', price: 20 },
-    { id: 3, name: 'soda', price: 30 },
+    { id: 1, name: 'rice', price: 10, assignedPeople: [] }, 
+    { id: 2, name: 'eggs', price: 20, assignedPeople: [] },
+    { id: 3, name: 'soda', price: 30, assignedPeople: [] },
   ]);
   const [people, setPeople] = useState<Person[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<string | null>(null);
 
   const addPerson = (name: string, color: string) => {
-    setPeople([...people, { name, color, assignedItems: [] }]);
+    setPeople([...people, { name, color, assignedItems: [], sumOwed: 0 }]);
   };
 
   const assignItemToPerson = (item: Item) => {
     if (selectedPerson) {
+      // Update the list of people in the item
+      const updatedItem = {
+        ...item,
+        assignedPeople: [...item.assignedPeople, people.find(p => p.name === selectedPerson)!],
+      };
+
+      // Update the list of items in the person
       const updatedPeople = people.map(p => {
         if (p.name === selectedPerson) {
-          return { ...p, assignedItems: [...p.assignedItems, item] };
+          return { ...p, assignedItems: [...p.assignedItems, updatedItem] };
         }
         return p;
       });
+
+      const updatedItems = items.map(i => (i.id === item.id ? updatedItem : i));
+
+      setItems(updatedItems);
       setPeople(updatedPeople);
     }
   };

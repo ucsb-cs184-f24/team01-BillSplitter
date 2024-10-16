@@ -1,11 +1,6 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-
-export interface Item {
-  id: number;
-  name: string;
-  price: number;
-}
+import { Item } from './types';
 
 interface Props {
   item: Item;
