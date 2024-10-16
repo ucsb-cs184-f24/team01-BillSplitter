@@ -4,7 +4,7 @@ Bill Splitter Application built using Expo and React Native. The app will allow 
 # Tech Stack: 
 - ReactNative 
 - Firebase authentication
-- API
+- [Veryfi API]([url](https://docs.veryfi.com/api/receipts-invoices/process-a-document/))
 - Expo
 - Firebase db
 
