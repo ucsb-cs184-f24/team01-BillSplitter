@@ -1,6 +1,32 @@
 # team1
-Bill Splitter Application built using expo and react native. The app will allow users to easily split bills and expenses with other users by forming groups for specific expenses, and keep track of what they owe each person.
+Bill Splitter Application built using Expo and React Native. The app will allow users to easily split bills and expenses with other users by forming groups for specific expenses, and keep track of what they owe each person.
 
+# Tech Stack: 
+- ReactNative 
+- Firebase authentication
+- API
+- Expo
+- Firebase db
+
+# Plan for project: 
+- **Joseph Li, Adil, and Aneesh** will work on a Firebase project to do user authentication (via email/password, Google, Facebook, or phone). **Liv and Nadav** will find and implement the Image-to-Text API for receipt scanning to get the data from images. And **Alex and Yerassyl** will work on the design tasks, contributing to feature development and integration across the project (Yera - navigation). 
+
+# User roles: 
+1. Participant
+Goal:
+- To manage and settle shared expenses within any group context (friends, housemates, or a company).
+Permissions:
+- Create and join groups (e.g., for dinner with friends, household expenses, or company events).
+- Add, edit, and view shared bills.
+- Assign individual or group shares of expenses.
+- Track balances and payments (who owes whom).
+- Settle bills by sending or receiving payments.
+- Invite others to join groups or contribute to a shared expense.
+- View payment history and current balances.
+Example Use Cases:
+- Friends: Splitting dinner bills or travel expenses.
+- Housemates: Sharing rent, utilities, or groceries.
+- Company/Group: Handling shared expenses for events or group purchases.
 
 # Setup 
 ## Enviroment
@@ -16,10 +42,3 @@ see: https://reactnative.dev/docs/set-up-your-environment for more in-depth guid
 * yarn install 
 * yarn start
 * to run on iphone: scan qr code with camera app and openup in expo go have to be on the same wifi as computer
-
-
-## Task Updates
-
-- **Joseph Li, Adil, Aneesh**: Create a Firebase project to do user authentication (via email/password, Google, Facebook, or phone)
-- **Olivia/Nadav**: Researche the Image-to-Text API deciding between Google Cloud Vision or OCR.space, trying to understand the use cases of each to see which one would be better for the project. Olivia is working remotely with Nadav to get this done
-- **Alex/Yerassyl**: Work on the design tasks, contributing to feature development and integration across the project. (Yera - navigation) 
