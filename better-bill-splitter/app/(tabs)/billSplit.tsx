@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
 import ItemList from '../../components/ItemList';
 import PeopleList from '../../components/PeopleList';
@@ -11,9 +11,17 @@ const App: React.FC = () => {
     { id: 2, name: 'eggs', price: 20, assignedPeople: [] },
     { id: 3, name: 'soda', price: 30, assignedPeople: [] },
   ]);
-  const [people, setPeople] = useState<Person[]>([]);
+  const [people, setPeople] = useState<Person[]>([
+    { name: 'alex', color: '#000000', assignedItems: [], sumOwed: 0 },
+    { name: 'suhrit', color: '#00aaf1', assignedItems: [], sumOwed: 0 }
+  ]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<string | null>(null);
+
+  // Use effect to log updated people state
+  useEffect(() => {
+    console.log('People updated:', people);
+  }, [people]);
 
   const addPerson = (name: string, color: string) => {
     setPeople([...people, { name, color, assignedItems: [], sumOwed: 0 }]);
@@ -21,26 +29,53 @@ const App: React.FC = () => {
 
   const assignItemToPerson = (item: Item) => {
     if (selectedPerson) {
-      // Update the list of people in the item
-      const updatedItem = {
-        ...item,
-        assignedPeople: [...item.assignedPeople, people.find(p => p.name === selectedPerson)!],
-      };
+      const selectedPersonObj = people.find(p => p.name === selectedPerson);
 
-      // Update the list of items in the person
-      const updatedPeople = people.map(p => {
-        if (p.name === selectedPerson) {
-          return { ...p, assignedItems: [...p.assignedItems, updatedItem] };
-        }
-        return p;
-      });
+      // Ensure the person is found
+      if (!selectedPersonObj) return;
 
-      const updatedItems = items.map(i => (i.id === item.id ? updatedItem : i));
+      // Avoid duplicating assignment
+      if (!item.assignedPeople.includes(selectedPersonObj)) {
+        // Update the assignedPeople list for the item
+        const updatedItem = {
+          ...item,
+          assignedPeople: [...item.assignedPeople, selectedPersonObj],
+        };
 
-      setItems(updatedItems);
-      setPeople(updatedPeople);
+        // Recalculate sumOwed for all people assigned to the item
+        const pricePerPerson = updatedItem.price / updatedItem.assignedPeople.length;
+
+        // Update the state for each person involved with the item
+        selectedPersonObj.sumOwed += pricePerPerson
+        selectedPersonObj.assignedItems = [...selectedPersonObj.assignedItems, updatedItem]
+        const updatedPeople = people.map(p => {
+          if (p.assignedItems.includes(item)) {
+            // Update the person's assigned items and sumOwed
+            const newAssignedItems = p.assignedItems.some(ai => ai.id === updatedItem.id)
+              ? p.assignedItems.map(ai => ai.id === updatedItem.id ? updatedItem : ai)
+              : [...p.assignedItems, updatedItem];
+
+            const newSumOwed = p.sumOwed - (item.price / item.assignedPeople.length) + pricePerPerson;
+
+            return {
+              ...p,
+              assignedItems: newAssignedItems,
+              sumOwed: newSumOwed,
+            };
+          }
+          return p;
+        });
+
+        // Update the items array
+        const updatedItems = items.map(i => (i.id === item.id ? updatedItem : i));
+
+        // Set updated state
+        setItems(updatedItems);
+        setPeople(updatedPeople);
+      }
     }
   };
+
 
   return (
     <View style={styles.container}>
