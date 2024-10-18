@@ -1,4 +1,4 @@
-# Date of Retrospective: 10/20/23
+# Date of Retrospective: 10/18/24
 
 * Led by: Liv
 * Present: Liv, Nadav, Joseph, Aneesh, Remote: Alex, Adil, Yerassyl 
