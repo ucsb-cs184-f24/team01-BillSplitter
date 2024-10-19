@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Text } from 'react-native';
 import firebase from './firebaseConfig';
 
-const SignInScreen = ({ navigation }) => {
+const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSignIn = () => {
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(() => {
-        navigation.navigate('Home');
+  const handleSignUp = () => {
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        console.log("User registered:", userCredential.user);
+        navigation.navigate('Home'); // nav to home after sign-up
       })
       .catch((error) => {
-        setError(error.message);
+        setError(error.message); // display any error that occurs
       });
   };
 
@@ -32,12 +33,10 @@ const SignInScreen = ({ navigation }) => {
         onChangeText={setPassword}
         style={{ marginBottom: 10, borderWidth: 1, padding: 5 }}
       />
-      <Button title="Sign In" onPress={handleSignIn} />
+      <Button title="Sign Up" onPress={handleSignUp} />
       {error ? <Text style={{ color: 'red' }}>{error}</Text> : null}
-
-      <Button title="Don't have an account? Sign Up" onPress={() => navigation.navigate('Sign Up')} />
     </View>
   );
 };
 
-export default SignInScreen;
+export default SignUpScreen;
