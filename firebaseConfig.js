@@ -1,14 +1,13 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
-// #TODO: replace with my own credentials
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyCg1npbClH-0SxsRrffFSEPMwLHRRgWTys",
+  authDomain: "auth-and-nav.firebaseapp.com",
+  projectId: "auth-and-nav",
+  storageBucket: "auth-and-nav.appspot.com",
+  messagingSenderId: "767388186853",
+  appId: "1:767388186853:ios:8c4c9fc5f0f132119b7c0c",
 };
 
 // initialize Firebase only once
