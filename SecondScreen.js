@@ -6,7 +6,7 @@ const SecondScreen = () => {
     <View style={{ padding: 20 }}>
       <Text>This is the second page with different content.
       </Text>
-      <Text>Two drums and a symbol fall off a cliff.
+      <Text>Two drums and a cymbal fall off a cliff.
         Ba dum tss </Text>
     </View>
   );
