@@ -13,6 +13,8 @@ import ManualAddScreen from './tabs/ManualAddScreen';
 import AddWithPictureScreen from './tabs/AddWithPictureScreen';
 import FriendsScreen from './tabs/FriendsScreen';
 import SettingsScreen from './tabs/SettingsScreen';
+import BillDetailsScreen from './tabs/BillDetailsScreen';
+import PastBillsScreen from './tabs/PastBillsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -26,7 +28,7 @@ function MainAppNavigator() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Icon name="home" color={color} size={size} />
-          ),
+          ),  headerShown: false
         }}
       />
       <Tab.Screen 
@@ -35,7 +37,7 @@ function MainAppNavigator() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Icon name="add-circle" color={color} size={size} />
-          ),
+          ), headerShown: false
         }}
       />
       <Tab.Screen 
@@ -44,7 +46,7 @@ function MainAppNavigator() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Icon name="people" color={color} size={size} />
-          ),
+          ), headerShown: false
         }}
       />
       <Tab.Screen 
@@ -53,7 +55,7 @@ function MainAppNavigator() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Icon name="settings" color={color} size={size} />
-          ),
+          ), headerShown: false
         }}
       />
     </Tab.Navigator>
@@ -87,13 +89,31 @@ export default function App() {
         {user ? (
           <>
             <Stack.Screen name="Main" component={MainAppNavigator} options={{ headerShown: false }} />
-            <Stack.Screen name="ManualAddScreen" component={ManualAddScreen} />
-            <Stack.Screen name="AddWithPictureScreen" component={AddWithPictureScreen} />
+            <Stack.Screen 
+              name="ManualAddScreen" 
+              component={ManualAddScreen} 
+              options={{ headerShown: false}}
+            />
+            <Stack.Screen 
+              name="AddWithPictureScreen" 
+              component={AddWithPictureScreen} 
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+              name="BillDetails" 
+              component={BillDetailsScreen} 
+              options={{ headerShown: false}}
+            />
+            <Stack.Screen 
+              name="PastBills" 
+              component={PastBillsScreen}
+              options={{ headerShown: false }}
+            />
           </>
         ) : (
           <>
-            <Stack.Screen name="Sign In" component={SignInScreen} />
-            <Stack.Screen name="Sign Up" component={SignUpScreen} />
+            <Stack.Screen name="Sign In" component={SignInScreen} options={{ headerShown: false }}/>
+            <Stack.Screen name="Sign Up" component={SignUpScreen} options={{ headerShown: false }}/>
           </>
         )}
       </Stack.Navigator>

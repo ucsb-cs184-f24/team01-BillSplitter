@@ -1,18 +1,89 @@
-import React, { useState } from 'react';
-import { View, Button, Text, Image, StyleSheet, Alert, ScrollView } from 'react-native';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  TextInput,
+  ScrollView,
+  Image,
+  Alert,
+  ActivityIndicator,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  Modal
+} from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import axios from 'axios';
+import firebase from '../firebaseConfig';
+import CategorySelector, { categories } from '../components/CategorySelector';
+import styles from '../styles/AddWithPictureScreenStyles';
 
-const AddWithPictureScreen = () => {
+const AddWithPictureScreen = ({ navigation }) => {
+  // Image and Receipt Data States
   const [imageUri, setImageUri] = useState(null);
-  const [items, setItems] = useState([]); // State for storing receipt items
-  const [total, setTotal] = useState(null); // State for total amount
+  const [items, setItems] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  
+  // Bill Details States
+  const [billAmount, setBillAmount] = useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('other');
+  
+  // UI States
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showFriendSelector, setShowFriendSelector] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  // Split States
+  const [selectedFriends, setSelectedFriends] = useState([]);
+  const [friends, setFriends] = useState([]);
+  const [friendSplits, setFriendSplits] = useState({});
+  
+  const currentUser = firebase.auth().currentUser;
+  const db = firebase.firestore();
+
+  // Fetch friends list
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const unsubscribe = db.collection('friendships')
+      .where('status', '==', 'accepted')
+      .where('participants', 'array-contains', currentUser.uid)
+      .onSnapshot(async snapshot => {
+        try {
+          const friendsPromises = snapshot.docs.map(async doc => {
+            const friendship = doc.data();
+            const friendId = friendship.participants.find(id => id !== currentUser.uid);
+            const friendDoc = await db.collection('users').doc(friendId).get();
+            
+            return {
+              id: friendId,
+              name: friendDoc.data()?.displayName || friendDoc.data()?.email,
+              email: friendDoc.data()?.email,
+            };
+          });
+
+          const friendsData = await Promise.all(friendsPromises);
+          setFriends(friendsData);
+        } catch (error) {
+          console.error('Error fetching friends:', error);
+          Alert.alert('Error', 'Failed to load friends list');
+        }
+      });
+
+    return () => unsubscribe();
+  }, []);
 
   const selectImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
-    if (permissionResult.granted === false) {
-      Alert.alert("Permission to access the camera roll is required!");
+    if (!permissionResult.granted) {
+      Alert.alert('Permission Required', 'Please allow access to your photo library to select a receipt.');
       return;
     }
 
@@ -20,187 +91,460 @@ const AddWithPictureScreen = () => {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: false,
+        aspect: [3, 4],
+        quality: 0.8,
         base64: true,
-        aspect: [2, 3], // Changed aspect ratio to be more receipt-like
-        quality: 1,
-        allowsMultipleSelection: false,
       });
 
-      console.log('ImagePicker Result:', JSON.stringify(result, null, 2));
-
-      if (!result.canceled) {
-        if (result.assets && result.assets[0]) {
-          const asset = result.assets[0];
-          console.log('Selected asset:', JSON.stringify(asset, null, 2));
-          setImageUri(asset.uri);
-          if (asset.base64) {
-            uploadImageToVeryfi(asset.base64);
-          } else {
-            Alert.alert('Error', 'Failed to retrieve base64 data');
-          }
-        }
+      if (!result.canceled && result.assets && result.assets[0]) {
+        setImageUri(result.assets[0].uri);
+        processReceipt(result.assets[0].base64);
       }
     } catch (error) {
       console.error('Image picking error:', error);
-      Alert.alert('Error', 'Failed to pick image');
+      Alert.alert('Error', 'Failed to select image');
     }
   };
 
-  const uploadImageToVeryfi = async (base64Data) => {
-    if (!base64Data) {
-      Alert.alert('Error', 'No base64 data available');
+  const processReceipt = async (base64Data) => {
+    if (!base64Data) return;
+
+    setProcessing(true);
+    try {
+      const response = await axios.post('https://api.veryfi.com/api/v8/partner/documents/', {
+        file_data: base64Data,
+        categories: ['Grocery', 'Utilities'],
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Client-Id': 'vrfgg8zdNriSgmwfeFtvn60sLZXXDTgGyf52Tt1',
+          'Authorization': 'apikey nadavavital:5bd7d76e76268b00d6ce8418e2726b51',
+        }
+      });
+
+      if (response.data.line_items) {
+        setItems(response.data.line_items);
+        
+        if (response.data.total) {
+          setBillAmount(response.data.total.toString());
+        }
+        
+        if (response.data.vendor?.name) {
+          setTitle(`Bill from ${response.data.vendor.name}`);
+        }
+      }
+    } catch (error) {
+      console.error('Receipt processing error:', error);
+      Alert.alert('Error', 'Failed to process receipt');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const uploadImage = async (uri) => {
+    try {
+      setUploading(true);
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      
+      const filename = `receipts/${currentUser.uid}/${Date.now()}.jpg`;
+      const ref = firebase.storage().ref().child(filename);
+      
+      const snapshot = await ref.put(blob);
+      const downloadURL = await snapshot.ref.getDownloadURL();
+      
+      return downloadURL;
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleAddBill = async () => {
+    if (!billAmount || !title) {
+      Alert.alert('Error', 'Please enter bill amount and title');
       return;
     }
 
-    const cleanBase64 = base64Data.replace(/^data:image\/[a-z]+;base64,/, "");
+    if (selectedFriends.length === 0) {
+      Alert.alert('Error', 'Please select at least one friend');
+      return;
+    }
 
-    const url = 'https://api.veryfi.com/api/v8/partner/documents/';
-    const headers = {
-      'Content-Type': 'application/json',
-      'Client-Id': 'vrfgg8zdNriSgmwfeFtvn60sLZXXDTgGyf52Tt1',
-      'Authorization': 'apikey nadavavital:5bd7d76e76268b00d6ce8418e2726b51',
-      'Accept': 'application/json',
-    };
-
-    const data = {
-      file_data: cleanBase64,
-      categories: ['Grocery', 'Utilities'],
-    };
-
+    setLoading(true);
     try {
-      const response = await axios.post(url, data, { headers });
-      console.log('Veryfi Response:', response.data);
-      
-      // Extract and set items from the response
-      if (response.data.line_items) {
-        setItems(response.data.line_items);
+      let imageUrl = null;
+      if (imageUri) {
+        try {
+          imageUrl = await uploadImage(imageUri);
+        } catch (error) {
+          console.error('Image upload failed:', error);
+          const shouldContinue = await new Promise((resolve) => {
+            Alert.alert(
+              'Warning',
+              'Failed to upload receipt image. Continue without image?',
+              [
+                { text: 'Cancel', onPress: () => resolve(false) },
+                { text: 'Continue', onPress: () => resolve(true) }
+              ]
+            );
+          });
+
+          if (!shouldContinue) {
+            setLoading(false);
+            return;
+          }
+        }
       }
-      
-      // Set total amount
-      if (response.data.total) {
-        setTotal(response.data.total);
-      }
-      
-      Alert.alert("Success", "Receipt processed successfully!");
+
+      // Create bill document
+      const billRef = await db.collection('bills').add({
+        amount: parseFloat(billAmount),
+        title: title,
+        description: description || '',
+        category: category,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdBy: currentUser.uid,
+        status: 'pending',
+        participants: [currentUser.uid, ...selectedFriends],
+        totalParticipants: selectedFriends.length + 1,
+        receiptItems: items.map((item, index) => ({
+          ...item,
+          assignments: friendSplits[index]?.sharedBy || [currentUser.uid]
+        })),
+        receiptImage: imageUrl,
+      });
+
+      // Calculate and create payments
+      const individualShares = {};
+      items.forEach((item, index) => {
+        const sharedBy = friendSplits[index]?.sharedBy || [currentUser.uid];
+        const shareAmount = item.total / sharedBy.length;
+        
+        sharedBy.forEach(userId => {
+          individualShares[userId] = (individualShares[userId] || 0) + shareAmount;
+        });
+      });
+
+      const payments = [currentUser.uid, ...selectedFriends].map(userId => ({
+        billId: billRef.id,
+        userId: userId,
+        amount: individualShares[userId] || 0,
+        status: userId === currentUser.uid ? 'paid' : 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      }));
+
+      await Promise.all(
+        payments.map(payment => db.collection('payments').add(payment))
+      );
+
+      Alert.alert('Success', 'Bill added and split successfully!');
+      navigation.goBack();
     } catch (error) {
-      if (error.response) {
-        console.error('API Error Response:', error.response.data);
-      } else {
-        console.error('API Request Error:', error.message);
-      }
-      Alert.alert('Error', 'There was an error processing the receipt.');
+      console.error('Error adding bill:', error);
+      Alert.alert('Error', 'Failed to add bill');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const renderItems = () => {
-    if (items.length === 0) return null;
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.label : 'Other';
+  };
 
-    return (
-      <View style={styles.itemsContainer}>
-        <Text style={styles.itemsHeader}>Receipt Items:</Text>
-        {items.map((item, index) => (
-          <View key={index} style={styles.itemRow}>
-            <Text style={styles.itemDescription}>
-              {item.description || 'Unknown Item'}
-            </Text>
-            <Text style={styles.itemPrice}>
-              ${item.total ? item.total.toFixed(2) : '0.00'}
-            </Text>
-          </View>
-        ))}
-        {total && (
-          <View style={styles.totalRow}>
-            <Text style={styles.totalText}>Total:</Text>
-            <Text style={styles.totalAmount}>${total.toFixed(2)}</Text>
-          </View>
-        )}
-      </View>
-    );
+  const getAssignedFriends = (itemIndex) => {
+    const assignments = friendSplits[itemIndex]?.sharedBy || [currentUser.uid];
+    return assignments.map(userId => {
+      if (userId === currentUser.uid) return 'You';
+      const friend = friends.find(f => f.id === userId);
+      return friend ? friend.name : 'Unknown';
+    }).join(', ');
+  };
+
+  const toggleFriendForItem = (itemIndex, friendId) => {
+    setFriendSplits(prev => {
+      const newSplits = { ...prev };
+      // Initialize with empty array instead of including currentUser
+      const currentItem = newSplits[itemIndex] || { sharedBy: [] };
+      
+      if (currentItem.sharedBy.includes(friendId)) {
+        // Remove friend if they're already assigned
+        newSplits[itemIndex] = {
+          ...currentItem,
+          sharedBy: currentItem.sharedBy.filter(id => id !== friendId)
+        };
+      } else {
+        // Add only the selected friend
+        newSplits[itemIndex] = {
+          ...currentItem,
+          sharedBy: [...currentItem.sharedBy, friendId]
+        };
+      }
+      
+      return newSplits;
+    });
   };
 
   return (
-    <ScrollView style={styles.scrollView}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Add Bill with Picture</Text>
-        <Button title="Select a Picture" onPress={selectImage} />
-        {imageUri && (
-          <Image 
-            source={{ uri: imageUri }} 
-            style={styles.image}
-            resizeMode="contain"
-          />
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Feather name="arrow-left" size={24} color="#007AFF" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Add Bill with Picture</Text>
+        </View>
+  
+        <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+          <TouchableOpacity 
+            style={styles.imageButton}
+            onPress={selectImage}
+          >
+            {imageUri ? (
+              <Image 
+                source={{ uri: imageUri }} 
+                style={styles.selectedImage}
+                resizeMode="contain"
+              />
+            ) : (
+              <View style={styles.imagePlaceholder}>
+                <Feather name="camera" size={40} color="#666" />
+                <Text style={styles.imagePlaceholderText}>
+                  Tap to select receipt image
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+  
+          {processing && (
+            <View style={styles.processingContainer}>
+              <ActivityIndicator size="small" color="#007AFF" />
+              <Text style={styles.processingText}>Processing receipt...</Text>
+            </View>
+          )}
+  
+          <View style={styles.form}>
+            <Text style={styles.label}>Title</Text>
+            <TextInput
+              style={styles.input}
+              value={title}
+              onChangeText={setTitle}
+              placeholder="Enter bill title"
+              placeholderTextColor="#999"
+            />
+  
+            <View style={styles.horizontalContainer}>
+              <View style={styles.flex1}>
+                <Text style={styles.label}>Amount</Text>
+                <TextInput
+                  style={styles.input}
+                  value={billAmount}
+                  onChangeText={setBillAmount}
+                  keyboardType="decimal-pad"
+                  placeholder="Enter amount"
+                  placeholderTextColor="#999"
+                />
+              </View>
+              
+              <View style={styles.horizontalSpacing} />
+              
+              <View style={styles.flex1}>
+                <Text style={styles.label}>Category</Text>
+                <TouchableOpacity
+                  style={styles.categoryButton}
+                  onPress={() => setShowCategoryModal(true)}
+                >
+                  <Feather 
+                    name={categories.find(cat => cat.id === category)?.icon || 'grid'} 
+                    size={20} 
+                    color="#007AFF" 
+                  />
+                  <Text style={styles.categoryButtonText}>
+                    {getCategoryName(category)}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+  
+            <Text style={styles.label}>Split With</Text>
+            <TouchableOpacity
+              style={styles.friendButton}
+              onPress={() => setShowFriendSelector(true)}
+            >
+              <Feather name="users" size={20} color="#007AFF" />
+              <Text style={styles.friendButtonText}>
+                {selectedFriends.length > 0 
+                  ? `${selectedFriends.length} friends selected` 
+                  : 'Select friends'}
+              </Text>
+            </TouchableOpacity>
+  
+            <Text style={styles.label}>Description (Optional)</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              value={description}
+              onChangeText={setDescription}
+              placeholder="Add description"
+              placeholderTextColor="#999"
+              multiline
+              numberOfLines={3}
+            />
+  
+            {items.length > 0 && (
+              <View style={styles.itemsSection}>
+                <Text style={styles.sectionTitle}>Receipt Items</Text>
+                {items.map((item, index) => (
+                  <View key={index} style={styles.itemCard}>
+                    <View style={styles.itemHeader}>
+                      <Text style={styles.itemDescription}>
+                        {item.description || `Item ${index + 1}`}
+                      </Text>
+                      <Text style={styles.itemAmount}>
+                        ${item.total?.toFixed(2)}
+                      </Text>
+                    </View>
+                    
+                    <Text style={styles.assignLabel}>Assign to:</Text>
+                    <View style={styles.assignees}>
+                      <TouchableOpacity
+                        style={[
+                          styles.assigneeChip,
+                          friendSplits[index]?.sharedBy?.includes(currentUser.uid) && 
+                          styles.assigneeChipSelected
+                        ]}
+                        onPress={() => toggleFriendForItem(index, currentUser.uid)}
+                      >
+                        <Text style={[
+                          styles.assigneeChipText,
+                          friendSplits[index]?.sharedBy?.includes(currentUser.uid) && 
+                          styles.assigneeChipTextSelected
+                        ]}>
+                          You
+                        </Text>
+                      </TouchableOpacity>
+                      
+                      {selectedFriends.map(friendId => {
+                        const friend = friends.find(f => f.id === friendId);
+                        return (
+                          <TouchableOpacity
+                            key={friendId}
+                            style={[
+                              styles.assigneeChip,
+                              friendSplits[index]?.sharedBy?.includes(friendId) && 
+                              styles.assigneeChipSelected
+                            ]}
+                            onPress={() => toggleFriendForItem(index, friendId)}
+                          >
+                            <Text style={[
+                              styles.assigneeChipText,
+                              friendSplits[index]?.sharedBy?.includes(friendId) && 
+                              styles.assigneeChipTextSelected
+                            ]}>
+                              {friend?.name || friend?.email}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+  
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={handleAddBill}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.addButtonText}>Add Bill</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+  
+        <CategorySelector
+          showModal={showCategoryModal}
+          selectedCategory={category}
+          onSelectCategory={setCategory}
+          onClose={() => setShowCategoryModal(false)}
+        />
+  
+        <Modal
+          visible={showFriendSelector}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setShowFriendSelector(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Select Friends</Text>
+                <TouchableOpacity
+                  onPress={() => setShowFriendSelector(false)}
+                  style={styles.modalCloseButton}
+                >
+                  <Feather name="x" size={24} color="#333" />
+                </TouchableOpacity>
+              </View>
+  
+              <ScrollView style={styles.modalScroll}>
+                {friends.map((friend) => (
+                  <TouchableOpacity
+                    key={friend.id}
+                    style={styles.friendItem}
+                    onPress={() => {
+                      setSelectedFriends(prev =>
+                        prev.includes(friend.id)
+                          ? prev.filter(id => id !== friend.id)
+                          : [...prev, friend.id]
+                      );
+                    }}
+                  >
+                    <View style={styles.friendInfo}>
+                      <Text style={styles.friendName}>{friend.name}</Text>
+                      <Text style={styles.friendEmail}>{friend.email}</Text>
+                    </View>
+                    <View style={[
+                      styles.checkbox,
+                      selectedFriends.includes(friend.id) && styles.checkedBox
+                    ]} />
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+  
+              <TouchableOpacity
+                style={styles.modalDoneButton}
+                onPress={() => setShowFriendSelector(false)}
+              >
+                <Text style={styles.modalDoneButtonText}>Done</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+  
+        {(uploading || processing) && (
+          <View style={styles.overlay}>
+            <ActivityIndicator size="large" color="#007AFF" />
+            <Text style={styles.overlayText}>
+              {uploading ? 'Uploading image...' : 'Processing receipt...'}
+            </Text>
+          </View>
         )}
-        {renderItems()}
-      </View>
-    </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  container: {
-    flex: 1,
-    padding: 20,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    fontWeight: 'bold',
-  },
-  image: {
-    width: 300,
-    height: 400, // Made taller to accommodate receipt shape
-    marginVertical: 20,
-    borderRadius: 10,
-  },
-  itemsContainer: {
-    width: '100%',
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 10,
-  },
-  itemsHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  itemRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  itemDescription: {
-    flex: 1,
-    fontSize: 16,
-  },
-  itemPrice: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginLeft: 10,
-  },
-  totalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 15,
-    paddingTop: 10,
-    borderTopWidth: 2,
-    borderTopColor: '#ddd',
-  },
-  totalText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  totalAmount: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});
 
 export default AddWithPictureScreen;
