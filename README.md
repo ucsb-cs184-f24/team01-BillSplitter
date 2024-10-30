@@ -3,7 +3,7 @@ Bill Splitter Application built using expo and react native. The app will allow 
 
 
 # Setup 
-## Enviroment
+## Environment
 see: https://reactnative.dev/docs/set-up-your-environment for more in-depth guide
 * clone repo
 * brew install node
