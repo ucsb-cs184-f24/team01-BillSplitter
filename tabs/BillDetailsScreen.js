@@ -11,8 +11,10 @@ import {
   Image 
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import ImageView from "react-native-image-viewing";
 import firebase from '../firebaseConfig';
 import { categories } from '../components/CategorySelector';
+
 
 const BillDetailsScreen = ({ route, navigation }) => {
   const { billId } = route.params;
@@ -20,6 +22,7 @@ const BillDetailsScreen = ({ route, navigation }) => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+  const [isImageVisible, setIsImageVisible] = useState(false);
   
   const currentUser = firebase.auth().currentUser;
   const db = firebase.firestore();
@@ -157,6 +160,40 @@ const BillDetailsScreen = ({ route, navigation }) => {
     if (userId === currentUser.uid) return 'You';
     return participant ? (participant.displayName || participant.email) : 'Unknown User';
   };
+  
+  const renderReceiptImage = () => {
+    if (billDetails?.receiptImage && !imageError) {
+      const images = [{ uri: billDetails.receiptImage }];
+      
+      return (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Receipt Image</Text>
+          <TouchableOpacity onPress={() => setIsImageVisible(true)}>
+            <Image
+              source={{ uri: billDetails.receiptImage }}
+              style={styles.receiptImage}
+              resizeMode="contain"
+              onError={() => setImageError(true)}
+            />
+            <View style={styles.imageHintContainer}>
+              <Feather name="maximize" size={16} color="#666" />
+              <Text style={styles.imageHintText}>Tap to view</Text>
+            </View>
+          </TouchableOpacity>
+
+          <ImageView
+            images={images}
+            imageIndex={0}
+            visible={isImageVisible}
+            onRequestClose={() => setIsImageVisible(false)}
+            doubleTapToZoomEnabled={true}
+            presentationStyle="overFullScreen"
+          />
+        </View>
+      );
+    }
+    return null;
+  };
 
   if (loading || !billDetails) {
     return (
@@ -267,17 +304,7 @@ const BillDetailsScreen = ({ route, navigation }) => {
           </View>
         )}
 
-        {billDetails.receiptImage && !imageError && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Receipt Image</Text>
-            <Image
-              source={{ uri: billDetails.receiptImage }}
-              style={styles.receiptImage}
-              resizeMode="contain"
-              onError={() => setImageError(true)}
-            />
-          </View>
-        )}
+        {renderReceiptImage()}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Payments</Text>
