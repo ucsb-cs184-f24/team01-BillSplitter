@@ -9,6 +9,7 @@ import {
   Platform,
   SafeAreaView,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import firebase from '../firebaseConfig';
@@ -52,6 +53,7 @@ const SignInScreen = ({ navigation }) => {
 
   return (
     <AuthScreenWrapper>
+      <Image source={require('../assets/app-logo.webp')} style={styles.logo} />
       <Text style={styles.title}>Welcome Back</Text>
       <Text style={styles.subtitle}>Sign in to continue</Text>
 
@@ -121,16 +123,24 @@ const styles = StyleSheet.create({
     padding: 24,
     justifyContent: 'center',
   },
+  logo: {
+    width: 100,
+    height: 100,
+    alignSelf: 'center',
+    marginBottom: 24,
+  },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
     color: '#1a1a1a',
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
     color: '#666',
     marginBottom: 32,
+    textAlign: 'center',
   },
   form: {
     gap: 16,
