@@ -14,9 +14,9 @@
 
 ## Retro Assessment
 * A brief description of what retro outline or process you used:
-  -> 
+  -> During our standup we checked in to make sure everyone was assigned to tasks correctly in the Kanban board, and gave a reminder that any finished tasks should be moved. 
 * A brief assessment of how it went:
-  -> 
+  -> Went well! We have been moving items as we go, and the reminder was helpful for people who forgot (like those who forgot to assign themselves new tasks w outlined acceptance criteria). 
 * What advice would you give to the next person leading a retro
   based on what you learned today?
-  ->
+  -> Friendly reminders at the standups are helpful!
