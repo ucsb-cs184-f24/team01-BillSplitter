@@ -15,6 +15,6 @@
 - Aneesh Agarwal:
 - Alexander Thomas:
 - Joseph Li:
-- Nadav Avital:
+- Nadav Avital: Simplify app design and introduce a common design language between pages
 - Adil Ahmed:
 - Olivia Jonokuchi: starting to draft menual and design doc, as per section07 guidelines: 
