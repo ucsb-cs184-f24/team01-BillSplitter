@@ -18,4 +18,4 @@ Note: the team member who will assess/comment on the other student's HW04 is the
 - Joseph Li:
 - Nadav Avital: Simplify app design and introduce a common design language between pages
 - Adil Ahmed:
-- Olivia Jonokuchi: starting to draft menual and design doc, as per section07 guidelines: 
+- Olivia Jonokuchi: Drafting manual and design doc, as per section07 guidelines. Also, updating the README. 
