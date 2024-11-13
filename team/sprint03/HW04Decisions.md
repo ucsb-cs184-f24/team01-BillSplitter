@@ -11,7 +11,7 @@
 - **Process**: Olivia Jonokuchi
 
 ## Planned Contributions:
-- Yerassyl Shakhmardanov:
+- Yerassyl Shakhmardanov: Improve and simplify code, implement multicurrency support and implement features that are needed
 - Aneesh Agarwal:
 - Alexander Thomas:
 - Joseph Li:
