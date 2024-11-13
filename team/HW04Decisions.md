@@ -1,7 +1,7 @@
 ## Partners: 
 Note: the team member who will assess/comment on the other student's HW04 is the partner
 - Aneesh and Adil
-- Nadav and Olivia
+- Nadav and Ol
 - Alex, Joseph, and Yerassyl
 
 ## Roles
