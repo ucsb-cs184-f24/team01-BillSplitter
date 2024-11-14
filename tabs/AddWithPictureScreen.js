@@ -89,7 +89,7 @@ const AddWithPictureScreen = ({ navigation }) => {
 
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ImagePicker.MediaTypeOptions.images,
         allowsEditing: false,
         aspect: [3, 4],
         quality: 0.8,

@@ -42,7 +42,6 @@ const SignInScreen = ({ navigation }) => {
     
     try {
       await firebase.auth().signInWithEmailAndPassword(email, password);
-      navigation.navigate('Main', { screen: 'Home' });
     } catch (error) {
       setError(error.message);
     } finally {
