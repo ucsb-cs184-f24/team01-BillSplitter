@@ -17,5 +17,5 @@ Note: the team member who will assess/comment on the other student's HW04 is the
 - Alexander Thomas: get user feed back from fellow ucsb students and upgrade expo version
 - Joseph Li: add testing for the for the app since we have none right now
 - Nadav Avital: Simplify app design and introduce a common design language between pages
-- Adil Ahmed:
+- Adil Ahmed: Add app logo and put that on different pages
 - Liv Jonokuchi: Drafting manual and design doc, as per section07 guidelines. Also, updating the README. 
