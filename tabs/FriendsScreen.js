@@ -19,6 +19,7 @@ import firebase from '../firebaseConfig';
 import { IncomingRequestCard } from '../components/IncomingRequestCard';
 import { OutgoingRequestCard } from '../components/OutgoingRequestCard';
 import { FriendCard } from '../components/FriendCard';
+import { UserSearchResultsModal } from '../components/UserSearchResultsModal';
 
 const FriendsScreen = () => {
   const [friends, setFriends] = useState([]);
@@ -29,6 +30,9 @@ const FriendsScreen = () => {
   const [loading, setLoading] = useState(true);
   const db = firebase.firestore();
   const currentUser = firebase.auth().currentUser;
+
+  const [searching, setSearching] = useState(false);
+
 
   useEffect(() => {
     if (!currentUser) return;
@@ -192,71 +196,38 @@ const FriendsScreen = () => {
     };
   }, []);
 
-  const sendFriendRequest = () => {
-    if (!newFriendEmail) {
-      Alert.alert('Error', 'Please enter an email');
-      return;
-    }
 
+  const sendFriendRequest = () => {
     if (!currentUser) {
       Alert.alert('Error', 'Must be logged in to send friend requests');
       return;
     }
 
+    if (!newFriendEmail) {
+      setSearchResults([]);
+      setSearching(false);
+      return;
+    }
+
+    setSearching(true);
+
+    // Search for users whose email starts with the entered text
     db.collection('users')
-      .where('email', '==', newFriendEmail.toLowerCase().trim())
+      .where('email', '>=', newFriendEmail.toLowerCase().trim())
+      .where('email', '<=', newFriendEmail.toLowerCase().trim() + '\uf8ff')
+      .limit(5)
       .get()
       .then(snapshot => {
-        if (snapshot.empty) {
-          Alert.alert('Error', 'User not found');
-          return;
-        }
+        const matchingUsers = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
 
-        const friendDoc = snapshot.docs[0];
-        const friendId = friendDoc.id;
-
-        if (friendId === currentUser.uid) {
-          Alert.alert('Error', 'Cannot add yourself as a friend');
-          return;
-        }
-
-        // Check if already friends or if request exists
-        return db.collection('friendships')
-          .where('participants', 'array-contains', currentUser.uid)
-          .get()
-          .then(friendshipSnapshot => {
-            const existingFriendship = friendshipSnapshot.docs.find(doc => {
-              const data = doc.data();
-              return data.participants.includes(friendId);
-            });
-
-            if (existingFriendship) {
-              const status = existingFriendship.data().status;
-              if (status === 'accepted') {
-                Alert.alert('Error', 'Already friends with this user');
-              } else {
-                Alert.alert('Error', 'Friend request already pending');
-              }
-              return;
-            }
-
-            // Create friend request
-            return db.collection('friendships').add({
-              participants: [currentUser.uid, friendId],
-              senderId: currentUser.uid,
-              receiverId: friendId,
-              status: 'pending',
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-          });
-      })
-      .then(() => {
-        setModalVisible(false);
-        setNewFriendEmail('');
-        Alert.alert('Success', 'Friend request sent!');
+        const filteredUsers = matchingUsers.filter(user => user.id !== currentUser.uid);
+        setSearchResults(filteredUsers);
       })
       .catch(error => {
-        console.error('Error sending friend request:', error);
+        console.error('Error searching for users:', error);
         Alert.alert('Error', error.message);
       });
   };
@@ -470,65 +441,23 @@ const FriendsScreen = () => {
         {/* Add Friend Button */}
         <TouchableOpacity
           style={styles.floatingButton}
-          onPress={() => setModalVisible(true)}
+          onPress={() => {
+            setSearching(true);
+          }}
         >
           <Feather name="user-plus" size={24} color="#FFFFFF" />
           <Text style={styles.floatingButtonText}>Add Friend</Text>
         </TouchableOpacity>
-
-        {/* Modal remains the same */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <KeyboardAvoidingView 
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.modalContainer}
-          >
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                  <View style={styles.modalHeader}>
-                    <Text style={styles.modalTitle}>Add New Friend</Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        Keyboard.dismiss();
-                        setModalVisible(false);
-                      }}
-                      style={styles.modalCloseButton}
-                    >
-                      <Feather name="x" size={24} color="#333" />
-                    </TouchableOpacity>
-                  </View>
-                  
-                  <Text style={styles.inputLabel}>Friend's Email Address</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Enter email"
-                    value={newFriendEmail}
-                    onChangeText={setNewFriendEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-
-                  <TouchableOpacity
-                    style={styles.submitButton}
-                    onPress={() => {
-                      Keyboard.dismiss();
-                      sendFriendRequest();
-                    }}
-                  >
-                    <Text style={styles.submitButtonText}>Send Friend Request</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          </KeyboardAvoidingView>
-        </Modal>
       </View>
+
+      <UserSearchResultsModal
+        visible={searching}
+        onClose={() => setSearching(false)}
+        currentUser={currentUser}
+        db={db}
+        setModalVisible={setSearching}
+        setNewFriendEmail={setNewFriendEmail}
+      />
     </SafeAreaView>
   );
 };
