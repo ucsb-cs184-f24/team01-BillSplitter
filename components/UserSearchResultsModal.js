@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     marginTop: 10,
-    marginBottom: 40,
+    marginBottom: 45,
     padding: 10,
     backgroundColor: '#e74c3c',
     borderRadius: 5,
@@ -213,6 +213,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    minHeight: 0,
+    maxHeight: '80%',
   },
 });
