@@ -481,6 +481,7 @@ const styles = {
     fontSize: 34,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: "#6C47FF",
   },
   addButton: {
     padding: 8,
@@ -656,7 +657,7 @@ const styles = {
     bottom: 20,
     left: 20,
     right: 20,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#6C47FF',
     borderRadius: 12,
     paddingVertical: 16,
     flexDirection: 'row',

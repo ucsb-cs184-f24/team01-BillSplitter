@@ -1,10 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView, Alert, ScrollView, Platform, Modal, KeyboardAvoidingView } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  SafeAreaView, 
+  Alert, 
+  ScrollView, 
+  Platform, 
+  Modal, 
+  KeyboardAvoidingView 
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import firebase from '../firebaseConfig';
 import { styles } from '../styles/ManualAddScreenStyles';
-import CategorySelector, {categories} from '../components/CategorySelector';
-import FriendSelector from '../components/FriendSelector';
+import CategorySelector, { categories } from '../components/CategorySelector';
 import BillSplitSection from '../components/BillSplitSection';
 
 const ManualAddScreen = ({ navigation }) => {
@@ -12,7 +22,7 @@ const ManualAddScreen = ({ navigation }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('other');
-  const [showCategoryModal, setShowCategoryModal] = useState(false);  // Add this line
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showFriendSelector, setShowFriendSelector] = useState(false);
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -63,13 +73,11 @@ const ManualAddScreen = ({ navigation }) => {
     const newSplits = { ...friendSplits };
     
     if (type === 'percentage') {
-      // Clamp between 0 and 100 for percentage
       newSplits[friendId] = {
         type: 'percentage',
         value: Math.min(Math.max(parseFloat(value) || 0, 0), 100)
       };
     } else {
-      // Clamp between 0 and total bill amount for dollar amount
       newSplits[friendId] = {
         type: 'amount',
         value: Math.min(Math.max(parseFloat(value) || 0, 0), parseFloat(billAmount) || 0)
@@ -88,7 +96,6 @@ const ManualAddScreen = ({ navigation }) => {
       return (totalAmount / totalParticipants).toFixed(2);
     }
     
-    // For custom split, calculate remaining amount after friends' splits
     let totalFriendsSplit = 0;
     selectedFriends.forEach(friendId => {
       if (friendSplits[friendId]) {
@@ -127,7 +134,6 @@ const ManualAddScreen = ({ navigation }) => {
     const newMode = splitMode === 'equal' ? 'custom' : 'equal';
     setSplitMode(newMode);
     
-    // Reset splits when changing to equal mode
     if (newMode === 'equal') {
       const equalSplit = 100 / (selectedFriends.length + 1);
       const newSplits = {};
@@ -145,7 +151,6 @@ const ManualAddScreen = ({ navigation }) => {
     const newType = splitType === 'percentage' ? 'amount' : 'percentage';
     setSplitType(newType);
     
-    // Convert existing splits to new type
     const newSplits = {};
     selectedFriends.forEach(friendId => {
       const currentSplit = friendSplits[friendId] || { type: 'percentage', value: 0 };
@@ -231,137 +236,175 @@ const ManualAddScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <KeyboardAvoidingView 
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
-    >
-      <ScrollView 
-        style={styles.container}
-        ref={scrollViewRef}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
       >
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Feather name="arrow-left" size={24} color="#007AFF" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Add New Bill</Text>
-        </View>
-  
-        <View style={styles.content}>
-          <Text style={styles.label}>Title</Text>
-          <TextInput
-            style={[styles.input, styles.marginBottom]}
-            placeholder="e.g., Dinner at Restaurant"
-            value={title}
-            onChangeText={setTitle}
-          />
-  
-          <View style={styles.rowContainer}>
-            <View style={styles.amountContainer}>
-              <Text style={styles.label}>Amount</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Amount"
-                keyboardType="numeric"
-                value={billAmount}
-                onChangeText={setBillAmount}
-              />
+        <ScrollView 
+          style={styles.container}
+          ref={scrollViewRef}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.header}>
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Feather name="arrow-left" size={24} color="#6C47FF" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Add New Bill</Text>
+          </View>
+
+          <View style={styles.content}>
+            <Text style={styles.label}>Title</Text>
+            <TextInput
+              style={[styles.input, styles.marginBottom]}
+              placeholder="e.g., Dinner at Restaurant"
+              value={title}
+              onChangeText={setTitle}
+            />
+
+            <View style={styles.rowContainer}>
+              <View style={styles.amountContainer}>
+                <Text style={styles.label}>Amount</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter Amount"
+                  keyboardType="numeric"
+                  value={billAmount}
+                  onChangeText={setBillAmount}
+                />
+              </View>
+
+              <View style={styles.categoryContainer}>
+                <Text style={styles.label}>Category</Text>
+                <TouchableOpacity
+                  style={styles.dropdownButton}
+                  onPress={() => setShowCategoryModal(true)}
+                >
+                  <Feather name={selectedCategory.icon} size={20} color="#6C47FF" />
+                  <Text style={styles.dropdownButtonText}>{selectedCategory.label}</Text>
+                  <Feather name="chevron-down" size={20} color="#666" />
+                </TouchableOpacity>
+              </View>
             </View>
-  
-            <View style={styles.categoryContainer}>
-              <Text style={styles.label}>Category</Text>
+
+            <Text style={[styles.label, styles.marginTop]}>Description (Optional)</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="Add any relevant details"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              numberOfLines={3}
+            />
+
+            <Text style={[styles.label, styles.marginTop]}>Split With</Text>
+            <TouchableOpacity
+              style={styles.dropdownButton}
+              onPress={() => setShowFriendSelector(true)}
+            >
+              <Feather name="users" size={20} color="#6C47FF" />
+              <Text style={styles.dropdownButtonText}>
+                {selectedFriends.length > 0 
+                  ? `${selectedFriends.length} friends selected` 
+                  : 'Select friends'}
+              </Text>
+              <Feather name="chevron-down" size={20} color="#666" />
+            </TouchableOpacity>
+
+            {selectedFriends.length > 0 && (
+              <BillSplitSection
+                currentUser={currentUser}
+                selectedFriends={selectedFriends}
+                friends={friends}
+                splitMode={splitMode}
+                splitType={splitType}
+                friendSplits={friendSplits}
+                onRemoveFriend={removeFriend}
+                onUpdateSplitAmount={updateSplitAmount}
+                onToggleSplitMode={toggleSplitMode}
+                onToggleSplitType={toggleSplitType}
+                calculateCurrentUserSplit={calculateCurrentUserSplit}
+                calculateSplitAmount={calculateSplitAmount}
+                styles={styles}
+                scrollViewRef={scrollViewRef}
+                friendPositions={friendPositions}
+              />
+            )}
+
+            <TouchableOpacity 
+              style={styles.addButton} 
+              onPress={handleAddBill}
+            >
+              <Text style={styles.addButtonText}>Add Bill</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+
+        {/* Category Selection Modal */}
+        <CategorySelector
+          showModal={showCategoryModal}
+          onClose={() => setShowCategoryModal(false)}
+          selectedCategory={category}
+          onSelectCategory={setCategory}
+        />
+
+        {/* Friend Selection Modal */}
+        <Modal
+          visible={showFriendSelector}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setShowFriendSelector(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Select Friends</Text>
+                <TouchableOpacity
+                  onPress={() => setShowFriendSelector(false)}
+                  style={styles.modalCloseButton}
+                >
+                  <Feather name="x" size={24} color="#333" />
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView style={styles.modalScroll}>
+                {friends.map((friend) => (
+                  <TouchableOpacity
+                    key={friend.id}
+                    style={styles.friendItem}
+                    onPress={() => {
+                      setSelectedFriends(prev =>
+                        prev.includes(friend.id)
+                          ? prev.filter(id => id !== friend.id)
+                          : [...prev, friend.id]
+                      );
+                    }}
+                  >
+                    <View style={styles.friendInfo}>
+                      <Text style={styles.friendName}>{friend.name}</Text>
+                      <Text style={styles.friendEmail}>{friend.email}</Text>
+                    </View>
+                    <View style={[
+                      styles.checkbox,
+                      selectedFriends.includes(friend.id) && styles.checkedBox
+                    ]} />
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
               <TouchableOpacity
-                style={styles.dropdownButton}
-                onPress={() => setShowCategoryModal(true)}
+                style={styles.modalDoneButton}
+                onPress={() => setShowFriendSelector(false)}
               >
-                <Feather name={selectedCategory.icon} size={20} color="#007AFF" />
-                <Text style={styles.dropdownButtonText}>{selectedCategory.label}</Text>
-                <Feather name="chevron-down" size={20} color="#666" />
+                <Text style={styles.modalDoneButtonText}>Done</Text>
               </TouchableOpacity>
             </View>
           </View>
-  
-          <Text style={[styles.label, styles.marginTop]}>Description (Optional)</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="Add any relevant details"
-            value={description}
-            onChangeText={setDescription}
-            multiline
-            numberOfLines={3}
-          />
-  
-          <Text style={[styles.label, styles.marginTop]}>Split With</Text>
-          <TouchableOpacity
-            style={styles.dropdownButton}
-            onPress={() => setShowFriendSelector(true)}
-          >
-            <Feather name="users" size={20} color="#007AFF" />
-            <Text style={styles.dropdownButtonText}>
-              {selectedFriends.length > 0 
-                ? `${selectedFriends.length} friends selected` 
-                : 'Select friends'}
-            </Text>
-            <Feather name="chevron-down" size={20} color="#666" />
-          </TouchableOpacity>
-  
-          {selectedFriends.length > 0 && (
-            <BillSplitSection
-              currentUser={currentUser}
-              selectedFriends={selectedFriends}
-              friends={friends}
-              splitMode={splitMode}
-              splitType={splitType}
-              friendSplits={friendSplits}
-              onRemoveFriend={removeFriend}
-              onUpdateSplitAmount={updateSplitAmount}
-              onToggleSplitMode={toggleSplitMode}
-              onToggleSplitType={toggleSplitType}
-              calculateCurrentUserSplit={calculateCurrentUserSplit}
-              calculateSplitAmount={calculateSplitAmount}
-              styles={styles}
-              scrollViewRef={scrollViewRef}
-              friendPositions={friendPositions}
-            />
-          )}
-  
-          <TouchableOpacity 
-            style={styles.addButton} 
-            onPress={handleAddBill}
-          >
-            <Text style={styles.addButtonText}>Add Bill</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-  
-      {/* Category Selection Modal */}
-      <CategorySelector
-        showModal={showCategoryModal}
-        onClose={() => setShowCategoryModal(false)}
-        selectedCategory={category}
-        onSelectCategory={setCategory}
-      />
-  
-      {/* Friend Selection Modal */}
-      <FriendSelector
-        visible={showFriendSelector}
-        onClose={() => setShowFriendSelector(false)}
-        friends={friends}
-        selectedFriends={selectedFriends}
-        onSelectFriend={(friendId) => {
-          setSelectedFriends(prev =>
-            prev.includes(friendId)
-              ? prev.filter(id => id !== friendId)
-              : [...prev, friendId]
-          );
-        }}
-        loading={loading}
-      />
-    </KeyboardAvoidingView>
+        </Modal>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

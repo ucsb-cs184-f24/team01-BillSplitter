@@ -7,6 +7,7 @@ export const styles = StyleSheet.create({
     },
     content: {
       padding: 20,
+      paddingBottom: Platform.OS === 'ios' ? 120 : 80,
     },
     title: {
       fontSize: 24,
@@ -100,12 +101,13 @@ export const styles = StyleSheet.create({
     },
     selectedFriendsContainer: {
       marginTop: 16,
+      marginBottom: 16,
     },
     splitControls: {
       flexDirection: 'row',
       marginBottom: 16,
       borderRadius: 8,
-      backgroundColor: '#F0F0F0',
+      backgroundColor: '#F5F1FF',
       padding: 4,
     },
     splitModeButton: {
@@ -133,7 +135,7 @@ export const styles = StyleSheet.create({
       fontWeight: '500',
     },
     splitModeButtonTextActive: {
-      color: '#007AFF',
+      color: '#6C47FF',
     },
     splitTypeToggle: {
       flexDirection: 'row',
@@ -143,7 +145,7 @@ export const styles = StyleSheet.create({
       padding: 8,
     },
     splitTypeText: {
-      color: '#007AFF',
+      color: '#6C47FF',
       marginRight: 8,
       fontWeight: '500',
     },
@@ -151,7 +153,7 @@ export const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       padding: 12,
-      backgroundColor: '#F8F9FA',
+      backgroundColor: '#F5F1FF',
       borderRadius: 8,
       marginBottom: 8,
     },
@@ -183,7 +185,7 @@ export const styles = StyleSheet.create({
     splitAmount: {
       fontSize: 16,
       fontWeight: '500',
-      color: '#007AFF',
+      color: '#6C47FF',
       marginRight: 8,
       minWidth: 60,
       textAlign: 'right',
@@ -195,7 +197,7 @@ export const styles = StyleSheet.create({
       flex: 1,
     },
     modalDoneButton: {
-      backgroundColor: '#007AFF',
+      backgroundColor: '#6C47FF',
       margin: 16,
       padding: 16,
       borderRadius: 12,
@@ -211,7 +213,8 @@ export const styles = StyleSheet.create({
       alignItems: 'center',
       padding: 16,
       borderBottomWidth: 1,
-      borderBottomColor: '#E0E0E0',
+      borderBottomColor: '#ECECEC',
+      backgroundColor: '#FFFFFF',
     },
     friendInfo: {
       flex: 1,
@@ -231,11 +234,11 @@ export const styles = StyleSheet.create({
       height: 24,
       borderRadius: 12,
       borderWidth: 2,
-      borderColor: '#007AFF',
+      borderColor: '#6C47FF',
       marginLeft: 12,
     },
     checkedBox: {
-      backgroundColor: '#007AFF',
+      backgroundColor: '#6C47FF',
     },
     loadingText: {
       padding: 20,
@@ -248,7 +251,7 @@ export const styles = StyleSheet.create({
       color: '#666',
     },
     addButton: {
-      backgroundColor: '#007AFF',
+      backgroundColor: '#6C47FF',
       padding: 16,
       borderRadius: 12,
       alignItems: 'center',
@@ -260,89 +263,82 @@ export const styles = StyleSheet.create({
       fontWeight: '600',
     },
     currentUserSplit: {
-      backgroundColor: '#E8F0FE', // Light blue background to distinguish current user
+      backgroundColor: '#F5F1FF',
       marginBottom: 16,
     },
     yourSplitAmount: {
-      color: '#007AFF',
+      color: '#6C47FF',
       fontWeight: 'bold',
       fontSize: 18,
     },
-    content: {
-      padding: 20,
-      paddingBottom: Platform.OS === 'ios' ? 120 : 80, // Add extra padding at bottom for keyboard
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'flex-end',
     },
-    selectedFriendsContainer: {
-      marginTop: 16,
+    modalContent: {
+      backgroundColor: '#fff',
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      minHeight: '50%',
+      maxHeight: '90%',
+    },
+    modalHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: '#E0E0E0',
+    },
+    modalTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: '#1F2937',
+    },
+    closeButton: {
+      padding: 4,
+    },
+    gridContainer: {
+      padding: 16,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    categoryButton: {
+      width: '30%',
+      aspectRatio: 1,
+      borderRadius: 12,
+      padding: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
       marginBottom: 16,
+      backgroundColor: '#F5F1FF',
     },
-    // Add these to your StyleSheet.create({...})
-modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    minHeight: '50%',
-    maxHeight: '90%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2937',
-  },
-  closeButton: {
-    padding: 4,
-  },
-  gridContainer: {
-    padding: 16,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  categoryButton: {
-    width: '30%',
-    aspectRatio: 1,
-    borderRadius: 12,
-    padding: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  categoryLabel: {
-    marginTop: 8,
-    fontSize: 12,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 20,
-    paddingTop: 12,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ECECEC',
-  },
-  backButton: {
-    marginRight: 12,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-  },
-  });
+    categoryLabel: {
+      marginTop: 8,
+      fontSize: 12,
+      fontWeight: '500',
+      textAlign: 'center',
+      color: '#6C47FF',
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 20,
+      paddingTop: 12,
+      paddingBottom: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ECECEC',
+    },
+    backButton: {
+      marginRight: 12,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#1a1a1a',
+    },
+});
 
-  export default styles;
+export default styles;

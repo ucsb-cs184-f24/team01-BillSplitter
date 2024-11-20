@@ -183,6 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: "#6C47FF",
   },
   paymentCard: {
     padding: 15,

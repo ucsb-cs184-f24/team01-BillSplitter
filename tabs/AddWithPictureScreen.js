@@ -299,7 +299,7 @@ const AddWithPictureScreen = ({ navigation }) => {
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Feather name="arrow-left" size={24} color="#007AFF" />
+            <Feather name="arrow-left" size={24} color="#6C47FF" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Add Bill with Picture</Text>
         </View>
@@ -317,7 +317,7 @@ const AddWithPictureScreen = ({ navigation }) => {
               />
             ) : (
               <View style={styles.imagePlaceholder}>
-                <Feather name="camera" size={40} color="#666" />
+                <Feather name="camera" size={40} color="#6C47FF" />
                 <Text style={styles.imagePlaceholderText}>
                   Tap to select receipt image
                 </Text>
@@ -327,7 +327,7 @@ const AddWithPictureScreen = ({ navigation }) => {
   
           {processing && (
             <View style={styles.processingContainer}>
-              <ActivityIndicator size="small" color="#007AFF" />
+              <ActivityIndicator size="small" color="#6C47FF" />
               <Text style={styles.processingText}>Processing receipt...</Text>
             </View>
           )}
@@ -366,7 +366,7 @@ const AddWithPictureScreen = ({ navigation }) => {
                   <Feather 
                     name={categories.find(cat => cat.id === category)?.icon || 'grid'} 
                     size={20} 
-                    color="#007AFF" 
+                    color="#6C47FF" 
                   />
                   <Text style={styles.categoryButtonText}>
                     {getCategoryName(category)}
@@ -380,7 +380,7 @@ const AddWithPictureScreen = ({ navigation }) => {
               style={styles.friendButton}
               onPress={() => setShowFriendSelector(true)}
             >
-              <Feather name="users" size={20} color="#007AFF" />
+              <Feather name="users" size={20} color="#6C47FF" />
               <Text style={styles.friendButtonText}>
                 {selectedFriends.length > 0 
                   ? `${selectedFriends.length} friends selected` 
