@@ -160,7 +160,7 @@ const HomeScreen = ({ navigation }) => {
 
         <TouchableOpacity 
           style={styles.addButton}
-          onPress={() => navigation.navigate('ManualAddScreen')}
+          onPress={() => navigation.navigate('AddBill')}
         >
           <Text style={styles.addButtonText}>Add New Bill</Text>
         </TouchableOpacity>
