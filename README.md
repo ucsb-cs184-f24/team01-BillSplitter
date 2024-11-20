@@ -1,25 +1,64 @@
 # team1
-Bill Splitter Application built using expo and react native. The app will allow users to easily split bills and expenses with other users by forming groups for specific expenses, and keep track of what they owe each person.
+A bill-splitting app built using Expo and React Native. The app simplifies the process of sharing expenses by allowing users to split bills, form groups for specific expenses, and track payments among friends.
 
+# Features
+## Friends Feature
+Search for friends by email address and send a friend request. Once accepted, you can add them to bills and track whether they’ve paid their share. View all friends in the Friends tab.
+## Bill Scanning
+Upload a photo of a bill, and the Veryfi OCR API will process it automatically. Extracts individual items with prices, which can then be assigned to yourself or your friends.
+## Manual Bill Splitting
+Create bills manually by entering details such as title, category, and amount. Split bills equally or assign custom amounts for each participant.
+## Payment Tracking
+View detailed bill information, including outstanding balances and payment statuses. Mark payments as settled with a "Mark as Paid" button or see a green "Paid" label for completed payments.
+## Past Bills
+View the history of all split bills, categorized as sent or received. Use it to confirm payments or track overdue balances.
 
 # Setup 
 ## Enviroment
 see: https://reactnative.dev/docs/set-up-your-environment for more in-depth guide
-* clone repo
-* brew install node
-* brew install watchman
-* install x code from app store(for ios simulator, idk probaly can get the simulator without xcode but thats how I did it)
-* npm install -g expo-cli
-* to run on iphone: download expo go
+* 1. clone repo:
+  > git clone https://github.com/your-repo-name/better-bill-splitter.git
+* 2. Install dependencies:
+  > brew install node
+  > brew install watchman
+* 3. For iOS: Install Xcode from the App Store for the iOS simulator.
+* 4. Install Expo CLI:
+  > npm install -g expo-cli
+* 5. For running on an iPhone: download the Expo Go app
 ## Running the app
-* cd better-bill-splitter
-* yarn install 
-* yarn start
-* to run on iphone: scan qr code with camera app and openup in expo go have to be on the same wifi as computer
+* 1. Navigate to the project directory:
+  > cd better-bill-splitter
+* 2. Install project dependencies:
+  > yarn install 
+* 3. Start the development server:
+  > yarn start
+* 4. To run on iPhone: Scan the QR code displayed in the terminal with your phone's camera. Open the app in Expo Go (ensure your phone and computer are on the same Wi-Fi network).
 
+# Design Overview:
+[Frontend (React Native)]
+        ↓
+[Backend (Firebase)]
+        ↓
+[Database (Firestore)]
+        ↓
+[Third-Party API (Veryfi OCR)]
 
-## Task Updates
+# Important Team Decisions
+## Authentication: 
+Chose Firebase Authentication for email/password and OAuth login due to ease of integration.
+## Receipt Scanning: 
+Implemented the Veryfi OCR API for accurate receipt processing.
+## Database: 
+Selected Firestore for its real-time capabilities.
+## MVP Scope: 
+Focused on manual bill entry, itemized splitting, friend management, and Firebase login.
+## Task Management: 
+Used GitHub Kanban to track progress and ensure clear task ownership.
 
-- **Joseph Li, Adil, Aneesh**: Create a Firebase project to do user authentication (via email/password, Google, Facebook, or phone)
-- **Olivia/Nadav**: Researche the Image-to-Text API deciding between Google Cloud Vision or OCR.space, trying to understand the use cases of each to see which one would be better for the project. Olivia is working remotely with Nadav to get this done
-- **Alex/Yerassyl**: Work on the design tasks, contributing to feature development and integration across the project. (Yera - navigation) 
+# High-Level User Flow
+1. Sign Up/Login: Authenticate using Firebase (email/password or third-party providers).
+2. Home Screen: Displays groups and recent activities. Provides access to create or manage bills and add friends.
+3. Add Bill: Upload receipts for automatic item extraction or manually input bill details.
+4. Split and Settle: Assign amounts to participants, calculate shares, and mark payments as completed.
+5. Friend Management: Add/remove friends and view pending requests.
+6. Settings: Access past bills, manage friends, check app version, or log out.
