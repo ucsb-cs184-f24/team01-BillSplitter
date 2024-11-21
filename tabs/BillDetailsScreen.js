@@ -14,7 +14,7 @@ import { Feather } from '@expo/vector-icons';
 import ImageView from "react-native-image-viewing";
 import firebase from '../firebaseConfig';
 import { categories } from '../components/CategorySelector';
-
+import PaymentStatusBar from './PaymentStatusBar';
 
 const BillDetailsScreen = ({ route, navigation }) => {
   const { billId } = route.params;
@@ -279,6 +279,11 @@ const BillDetailsScreen = ({ route, navigation }) => {
               </View>
             )}
           </View>
+
+          <PaymentStatusBar 
+            payments={payments}
+            totalAmount={billDetails.amount}
+          />
         </View>
 
         {billDetails.receiptItems && billDetails.receiptItems.length > 0 && (
