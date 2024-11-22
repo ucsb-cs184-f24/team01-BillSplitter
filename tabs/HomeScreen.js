@@ -19,6 +19,7 @@ const HomeScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
+    { key: 'all', title: 'All' },
     { key: 'unpaid', title: 'Unpaid' },
     { key: 'created', title: 'Created' },
     { key: 'received', title: 'Received' },
@@ -47,10 +48,22 @@ const HomeScreen = ({ navigation }) => {
           .where('billId', '==', payment.billId)
           .get();
         
-        const totalPending = allPaymentsSnapshot.docs.reduce((sum, payDoc) => {
-          const payData = payDoc.data();
-          return payData.status === 'pending' ? sum + payData.amount : sum;
-        }, 0);
+        const pendingPayments = allPaymentsSnapshot.docs
+          .filter(payDoc => payDoc.data().status === 'pending')
+          .map(payDoc => payDoc.data());
+
+        const pendingUsersPromises = pendingPayments.map(async pendingPay => {
+          const userDoc = await db.collection('users').doc(pendingPay.userId).get();
+          const userData = userDoc.data();
+          return {
+            name: userData.displayName || userData.email,
+            amount: pendingPay.amount
+          };
+        });
+
+        const pendingUsersData = await Promise.all(pendingUsersPromises);
+        
+        const totalPending = pendingPayments.length;
         
         const creatorDoc = await db.collection('users').doc(billData.createdBy).get();
         const creatorData = creatorDoc.data();
@@ -66,6 +79,8 @@ const HomeScreen = ({ navigation }) => {
           createdBy: billData.createdBy,
           creatorName: billData.createdBy === currentUser.uid ? 'You' : (creatorData.displayName || creatorData.email),
           createdAt: billData.createdAt?.toDate() || new Date(),
+          pendingUsers: pendingUsersData.map(p => p.name),
+          pendingAmounts: pendingUsersData.map(p => p.amount),
           totalPending,
           isCreator: billData.createdBy === currentUser.uid
         };
@@ -178,7 +193,30 @@ const HomeScreen = ({ navigation }) => {
   const ReceivedBills = () => renderBillList(payments.receivedBills || []);
   const PastBills = () => renderBillList(payments.pastBills || []);
 
+  const AllBills = () => {
+    // Create a Set of unique bill IDs to track what we've already added
+    const uniqueBills = new Map();
+    
+    // Combine all bills, keeping only the first occurrence of each bill
+    const allBills = [
+      ...(payments.unpaidBills || []),
+      ...(payments.createdBills || []),
+      ...(payments.receivedBills || []),
+      ...(payments.pastBills || [])
+    ].filter(bill => {
+      if (uniqueBills.has(bill.billId)) {
+        return false;
+      }
+      uniqueBills.set(bill.billId, true);
+      return true;
+    });
+
+    // Sort by creation date
+    return renderBillList(allBills.sort((a, b) => b.createdAt - a.createdAt));
+  };
+
   const renderScene = SceneMap({
+    all: AllBills,
     unpaid: UnpaidBills,
     created: CreatedBills,
     received: ReceivedBills,

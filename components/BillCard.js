@@ -22,7 +22,10 @@ const BillCard = ({
   const renderStatus = () => {
     if (item.isCreator) {
       if (item.totalPending > 0) {
-        return `$${item.totalPending.toFixed(2)} Pending`;
+        if (item.totalPending === 1) {
+          return `$${item.pendingAmounts[0].toFixed(2)} pending from ${item.pendingUsers[0]}`;
+        }
+        return `${item.totalPending} pending`;
       }
       return 'Received';
     }
@@ -52,6 +55,12 @@ const BillCard = ({
         {item.status === 'paid' ? 'Paid to' : 'You owe'} {item.creatorName}
       </Text>
     );
+  };
+
+  const getPendingText = (totalPending, pendingUsers) => {
+    if (totalPending === 0) return '';
+    if (totalPending === 1) return `Pending from ${pendingUsers[0]}`;
+    return `Pending from ${totalPending} people`;
   };
 
   return (
