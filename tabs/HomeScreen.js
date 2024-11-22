@@ -1,6 +1,5 @@
-// HomeScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, RefreshControl } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, RefreshControl, Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import firebase from '../firebaseConfig';
 import { categories } from '../components/CategorySelector';
@@ -11,34 +10,34 @@ const HomeScreen = ({ navigation }) => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  
+
   const currentUser = firebase.auth().currentUser;
   const db = firebase.firestore();
 
   const fetchPayments = async () => {
     if (!currentUser) return;
-    
+
     try {
       const snapshot = await db.collection('payments')
         .where('userId', '==', currentUser.uid)
         .orderBy('createdAt', 'desc')
         .get();
-      
+
       const paymentsPromises = snapshot.docs.map(async doc => {
         const payment = doc.data();
-        
+
         const billDoc = await db.collection('bills').doc(payment.billId).get();
         const billData = billDoc.data();
-        
+
         const allPaymentsSnapshot = await db.collection('payments')
           .where('billId', '==', payment.billId)
           .get();
-        
+
         const totalPending = allPaymentsSnapshot.docs.reduce((sum, payDoc) => {
           const payData = payDoc.data();
           return payData.status === 'pending' ? sum + payData.amount : sum;
         }, 0);
-        
+
         const creatorDoc = await db.collection('users').doc(billData.createdBy).get();
         const creatorData = creatorDoc.data();
 
@@ -59,30 +58,8 @@ const HomeScreen = ({ navigation }) => {
       });
 
       const paymentsData = await Promise.all(paymentsPromises);
-      
-      const pendingPayments = paymentsData
-        .filter(payment => !payment.isCreator && payment.status === 'pending')
-        .sort((a, b) => b.createdAt - a.createdAt);
 
-      const pendingCollections = paymentsData
-        .filter(payment => payment.isCreator && payment.totalPending > 0)
-        .sort((a, b) => b.totalPending - a.totalPending);
-
-      const resolvedPayments = paymentsData
-        .filter(payment => 
-          (payment.isCreator && payment.totalPending === 0) || 
-          (!payment.isCreator && payment.status === 'paid')
-        )
-        .sort((a, b) => b.createdAt - a.createdAt)
-        .slice(0, 5);
-      
-      const filteredPayments = [
-        ...pendingPayments,
-        ...pendingCollections,
-        ...resolvedPayments
-      ];
-      
-      setPayments(filteredPayments);
+      setPayments(paymentsData);
     } catch (error) {
       console.error('Error fetching payments:', error);
     }
@@ -90,9 +67,9 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (!currentUser) return;
-  
+
     setUserEmail(currentUser.email);
-  
+
     const unsubscribe = db.collection('payments')
       .where('userId', '==', currentUser.uid)
       .orderBy('createdAt', 'desc')
@@ -130,12 +107,23 @@ const HomeScreen = ({ navigation }) => {
       onPaymentPress={handlePayment}
     />
   );
-  
+
+  const renderEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Image
+        source={require('../assets/SplitLogo.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      <Text style={styles.emptyText}>Start splitting!</Text>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Text style={styles.welcome}>Home</Text>
-        
+
         {loading ? (
           <Text style={styles.loading}>Loading payments...</Text>
         ) : (
@@ -152,9 +140,7 @@ const HomeScreen = ({ navigation }) => {
                 colors={['#34C759']}
               />
             }
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>No payments found</Text>
-            }
+            ListEmptyComponent={renderEmptyComponent}
           />
         )}
 
@@ -185,72 +171,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "#6C47FF",
   },
-  paymentCard: {
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 15,
-    borderWidth: 1,
-    flexDirection: 'row',
-  },
-  categoryIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  paymentContent: {
-    flex: 1,
-  },
-  paymentHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  billTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    flex: 1,
-    marginRight: 8,
-  },
-  amount: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  description: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
-  },
-  paymentFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  createdBy: {
-    fontSize: 14,
-    color: '#666',
-  },
-  status: {
-    fontWeight: '600',
-  },
-  date: {
-    fontSize: 12,
-    color: '#999',
-  },
-  payButton: {
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  payButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
   addButton: {
     backgroundColor: '#34C759',
     padding: 15,
@@ -268,10 +188,21 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: '#666',
   },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  logo: {
+    width: 300,
+    height: 300,
+    marginBottom: 16,
+  },
   emptyText: {
-    textAlign: 'center',
-    marginTop: 20,
-    color: '#666',
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#6C47FF',
   },
 });
 
