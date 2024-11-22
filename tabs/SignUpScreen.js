@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Image } from 'react-native';
+
 import {
   View,
   Text,
@@ -65,6 +67,11 @@ const SignUpScreen = ({ navigation }) => {
   return (
     <AuthScreenWrapper>
       <View style={styles.logoContainer}>
+            <Image
+          source={require('../assets/SplitLogo.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
         <Text style={styles.logoText}>Split</Text>
         <Text style={styles.tagline}>Split bills, not friendships</Text>
       </View>
@@ -236,6 +243,12 @@ const styles = StyleSheet.create({
     marginTop: 16,
     lineHeight: 18,
   },
+  logoImage: {
+    width: 120, // Adjust width as needed
+    height: 120, // Adjust height as needed
+    marginBottom: 16,
+  },
+  
 });
 
 export default SignUpScreen;
