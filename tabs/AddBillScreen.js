@@ -23,7 +23,7 @@ const AddBillScreen = ({ navigation }) => {
           activeOpacity={0.7}
         >
           <View style={styles.iconContainer}>
-            <Feather name="edit-3" size={24} color="#007AFF" />
+            <Feather name="edit-3" size={24} color="#6C47FF" />
           </View>
           <View style={styles.cardContent}>
             <Text style={styles.cardTitle}>Manual Entry</Text>
@@ -31,7 +31,7 @@ const AddBillScreen = ({ navigation }) => {
               Enter bill details manually with our simple form
             </Text>
           </View>
-          <Feather name="chevron-right" size={24} color="#A0A0A0" />
+          <Feather name="chevron-right" size={24} color="#6C47FF" />
         </TouchableOpacity>
 
         <TouchableOpacity 
@@ -40,7 +40,7 @@ const AddBillScreen = ({ navigation }) => {
           activeOpacity={0.7}
         >
           <View style={styles.iconContainer}>
-            <Feather name="camera" size={24} color="#007AFF" />
+            <Feather name="camera" size={24} color="#6C47FF" />
           </View>
           <View style={styles.cardContent}>
             <Text style={styles.cardTitle}>Scan Bill</Text>
@@ -48,7 +48,7 @@ const AddBillScreen = ({ navigation }) => {
               Take a photo of your bill to auto-fill details
             </Text>
           </View>
-          <Feather name="chevron-right" size={24} color="#A0A0A0" />
+          <Feather name="chevron-right" size={24} color="#6C47FF" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: 'bold',
-    color: '#1A1A1A',
+    color: "#6C47FF",
     marginBottom: 8,
   },
   subtitle: {
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#F0F9FF',
+    backgroundColor: '#F5F1FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,

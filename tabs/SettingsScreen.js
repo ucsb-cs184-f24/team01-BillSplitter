@@ -84,7 +84,7 @@ const SettingsScreen = ({ navigation }) => {
     >
       <View style={styles.settingsItemLeft}>
         <View style={[styles.iconContainer, destructive && styles.destructiveIcon]}>
-          <Feather name={icon} size={20} color={destructive ? '#FF3B30' : '#007AFF'} />
+          <Feather name={icon} size={20} color={destructive ? '#FF3B30' : '#6C47FF'} />
         </View>
         <View>
           <Text style={[styles.settingsItemText, destructive && styles.destructiveText]}>
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: 'bold',
-    color: '#1a1a1a',
+    color: '#6C47FF',
   },
   group: {
     marginBottom: 24,
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 8,
-    backgroundColor: '#E8F2FF',
+    backgroundColor: '#F5F1FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,

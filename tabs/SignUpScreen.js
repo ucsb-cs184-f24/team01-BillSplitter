@@ -64,12 +64,14 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <AuthScreenWrapper>
-      <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>Sign up to get started</Text>
+      <View style={styles.logoContainer}>
+        <Text style={styles.logoText}>Split</Text>
+        <Text style={styles.tagline}>Split bills, not friendships</Text>
+      </View>
 
       <View style={styles.form}>
         <View style={styles.inputContainer}>
-          <Feather name="user" size={20} color="#666" style={styles.inputIcon} />
+          <Feather name="user" size={20} color="#6C47FF" style={styles.inputIcon} />
           <TextInput
             placeholder="Display Name (optional)"
             value={displayName}
@@ -80,7 +82,7 @@ const SignUpScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Feather name="mail" size={20} color="#666" style={styles.inputIcon} />
+          <Feather name="mail" size={20} color="#6C47FF" style={styles.inputIcon} />
           <TextInput
             placeholder="Email"
             value={email}
@@ -93,7 +95,7 @@ const SignUpScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Feather name="lock" size={20} color="#666" style={styles.inputIcon} />
+          <Feather name="lock" size={20} color="#6C47FF" style={styles.inputIcon} />
           <TextInput
             placeholder="Password"
             value={password}
@@ -103,7 +105,7 @@ const SignUpScreen = ({ navigation }) => {
             placeholderTextColor="#999"
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Feather name={showPassword ? "eye-off" : "eye"} size={20} color="#666" />
+            <Feather name={showPassword ? "eye-off" : "eye"} size={20} color="#6C47FF" />
           </TouchableOpacity>
         </View>
 
@@ -117,7 +119,7 @@ const SignUpScreen = ({ navigation }) => {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.mainButtonText}>Sign Up</Text>
+            <Text style={styles.mainButtonText}>Create Account</Text>
           )}
         </TouchableOpacity>
 
@@ -129,6 +131,12 @@ const SignUpScreen = ({ navigation }) => {
             Already have an account? <Text style={styles.textLink}>Sign In</Text>
           </Text>
         </TouchableOpacity>
+
+        <Text style={styles.termsText}>
+          By creating an account, you agree to Split's{' '}
+          <Text style={styles.textLink}>Terms of Service</Text> and{' '}
+          <Text style={styles.textLink}>Privacy Policy</Text>
+        </Text>
       </View>
     </AuthScreenWrapper>
   );
@@ -144,16 +152,20 @@ const styles = StyleSheet.create({
     padding: 24,
     justifyContent: 'center',
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginBottom: 8,
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 48,
   },
-  subtitle: {
+  logoText: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#6C47FF',
+    letterSpacing: -1,
+  },
+  tagline: {
     fontSize: 16,
     color: '#666',
-    marginBottom: 32,
+    marginTop: 8,
   },
   form: {
     gap: 16,
@@ -161,10 +173,12 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F8F6FF',
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E8E5FF',
   },
   inputIcon: {
     marginRight: 12,
@@ -178,11 +192,19 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   mainButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#6C47FF',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     marginTop: 8,
+    shadowColor: '#6C47FF',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   mainButtonText: {
     color: '#fff',
@@ -198,7 +220,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   textLink: {
-    color: '#007AFF',
+    color: '#6C47FF',
     fontWeight: '600',
   },
   errorText: {
@@ -206,6 +228,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 8,
     textAlign: 'center',
+  },
+  termsText: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 16,
+    lineHeight: 18,
   },
 });
 

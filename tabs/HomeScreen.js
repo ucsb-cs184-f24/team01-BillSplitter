@@ -242,14 +242,25 @@ const HomeScreen = ({ navigation }) => {
         {loading ? (
           <Text style={styles.loading}>Loading payments...</Text>
         ) : (
-          <TabView
-            navigationState={{ index, routes }}
-            renderScene={renderScene}
-            renderTabBar={renderTabBar}
-            onIndexChange={setIndex}
-            initialLayout={{ width: Dimensions.get('window').width }}
-            swipeEnabled={true}
-          />
+          <>
+            <View style={styles.tabContainer}>
+              <TabView
+                navigationState={{ index, routes }}
+                renderScene={renderScene}
+                renderTabBar={renderTabBar}
+                onIndexChange={setIndex}
+                initialLayout={{ width: Dimensions.get('window').width }}
+                swipeEnabled={true}
+              />
+            </View>
+
+            <TouchableOpacity 
+              style={styles.addButton}
+              onPress={() => navigation.navigate('AddBill')}
+            >
+              <Text style={styles.addButtonText}>Add New Bill</Text>
+            </TouchableOpacity>
+          </>
         )}
       </View>
     </SafeAreaView>
@@ -271,6 +282,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 20,
     marginTop: 10,
+    color: "#6C47FF",
   },
   paymentCard: {
     padding: 15,
@@ -376,6 +388,21 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 20,
     paddingTop: 10,
+  },
+  tabContainer: {
+    flex: 1,
+  },
+  addButton: {
+    backgroundColor: '#34C759',
+    padding: 16,
+    borderRadius: 12,
+    margin: 20,
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

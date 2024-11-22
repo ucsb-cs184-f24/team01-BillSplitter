@@ -21,7 +21,8 @@ const Tab = createBottomTabNavigator();
 
 function MainAppNavigator() {
   return (
-    <Tab.Navigator initialRouteName="Home">
+    <Tab.Navigator initialRouteName="Home" screenOptions={{
+      tabBarActiveTintColor: '#6C47FF',}}>
       <Tab.Screen 
         name="Home" 
         component={HomeScreen} 
@@ -29,15 +30,6 @@ function MainAppNavigator() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="home" color={color} size={size} />
           ),  headerShown: false
-        }}
-      />
-      <Tab.Screen 
-        name="Add Bill" 
-        component={AddBillScreen} 
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="add-circle" color={color} size={size} />
-          ), headerShown: false
         }}
       />
       <Tab.Screen 
@@ -85,24 +77,46 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          cardStyle: { backgroundColor: '#F8F9FA' },
+        }}
+      >
         {user ? (
           <>
-            <Stack.Screen name="Main" component={MainAppNavigator} options={{ headerShown: false }} />
+            <Stack.Screen 
+              name="Main" 
+              component={MainAppNavigator} 
+              options={{ headerShown: false }} 
+            />
+            <Stack.Screen 
+              name="AddBill" 
+              component={AddBillScreen} 
+              options={{ 
+                headerShown: false,
+                presentation: 'modal'
+              }}
+            />
             <Stack.Screen 
               name="ManualAddScreen" 
               component={ManualAddScreen} 
-              options={{ headerShown: false}}
+              options={{ 
+                headerShown: false,
+                presentation: 'modal'
+              }}
             />
             <Stack.Screen 
               name="AddWithPictureScreen" 
               component={AddWithPictureScreen} 
-              options={{ headerShown: false }}
+              options={{ 
+                headerShown: false,
+                presentation: 'modal'
+              }}
             />
             <Stack.Screen 
               name="BillDetails" 
               component={BillDetailsScreen} 
-              options={{ headerShown: false}}
+              options={{ headerShown: false }}
             />
             <Stack.Screen 
               name="PastBills" 
@@ -112,8 +126,16 @@ export default function App() {
           </>
         ) : (
           <>
-            <Stack.Screen name="Sign In" component={SignInScreen} options={{ headerShown: false }}/>
-            <Stack.Screen name="Sign Up" component={SignUpScreen} options={{ headerShown: false }}/>
+            <Stack.Screen 
+              name="Sign In" 
+              component={SignInScreen} 
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+              name="Sign Up" 
+              component={SignUpScreen} 
+              options={{ headerShown: false }}
+            />
           </>
         )}
       </Stack.Navigator>
