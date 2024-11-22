@@ -5613,10 +5613,22 @@ react-native-image-viewing@^0.2.2:
   resolved "https://registry.npmjs.org/react-native-image-viewing/-/react-native-image-viewing-0.2.2.tgz"
   integrity sha512-osWieG+p/d2NPbAyonOMubttajtYEYiRGQaJA54slFxZ69j1V4/dCmcrVQry47ktVKy8/qpFwCpW1eT6MH5T2Q==
 
+react-native-pager-view@6.5.1:
+  version "6.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.5.1.tgz#e639e8c975f4c749aae1c3120dc4208265fce4cc"
+  integrity sha512-YdX7bP+rPYvATMU7HzlMq9JaG3ui/+cVRbFZFGW+QshDULANFg9ECR1BA7H7JTIcO/ZgWCwF+1aVmYG5yBA9Og==
+
 react-native-safe-area-context@^4.11.1:
   version "4.11.1"
   resolved "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-4.11.1.tgz"
   integrity sha512-urF1m4nFiZFaWjsv2zj8J/hKvo4b2tJW+6CYU1mY4lKv1RwhG2eV8J/EHKuNlLhATZx3+6j7szrpHrQW2ZcAaQ==
+
+react-native-tab-view@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-4.0.3.tgz#3fb72d83ce547bf4115131f677bfc49437e8d42e"
+  integrity sha512-H/zb+CLOD6d7XouVB5kxZi7DZx+NhLzkhQ9kkcEvCCTzyM8NYjn4vH4dJa6EHx/JLQP1biLDlEH2g3xYuvKSBA==
+  dependencies:
+    use-latest-callback "^0.2.1"
 
 react-native-vector-icons@^10.2.0:
   version "10.2.0"

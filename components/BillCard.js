@@ -22,7 +22,10 @@ const BillCard = ({
   const renderStatus = () => {
     if (item.isCreator) {
       if (item.totalPending > 0) {
-        return `$${item.totalPending.toFixed(2)} Pending`;
+        if (item.totalPending === 1) {
+          return `$${item.pendingAmounts[0].toFixed(2)} pending from ${item.pendingUsers[0]}`;
+        }
+        return `${item.totalPending} pending`;
       }
       return 'Received';
     }
@@ -36,7 +39,7 @@ const BillCard = ({
     if (item.isCreator) {
       return item.totalPending > 0 ? '#FF9500' : '#34C759';
     }
-    return item.status === 'paid' ? '#34C759' : '#FF3B30';  // Changed to red for money owed
+    return item.status === 'paid' ? '#34C759' : '#FF3B30';  
   };
 
   const renderAmountText = () => {
@@ -52,6 +55,12 @@ const BillCard = ({
         {item.status === 'paid' ? 'Paid to' : 'You owe'} {item.creatorName}
       </Text>
     );
+  };
+
+  const getPendingText = (totalPending, pendingUsers) => {
+    if (totalPending === 0) return '';
+    if (totalPending === 1) return `Pending from ${pendingUsers[0]}`;
+    return `Pending from ${totalPending} people`;
   };
 
   return (
@@ -94,7 +103,7 @@ const BillCard = ({
           
           <View style={styles.paymentFooter}>
             {renderAmountText()}
-            <Text style={[styles.status, { color: getStatusColor() }]}>
+            <Text style={[styles.status, { color: getStatusColor() }]} numberOfLines={2}>
               {renderStatus()}
             </Text>
           </View>
@@ -156,7 +165,7 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
     },
     amountOwed: {
-      color: '#FF3B30',  // Red color for amounts you owe
+      color: '#FF3B30',  
     },
     description: {
       fontSize: 14,
@@ -174,6 +183,8 @@ const styles = StyleSheet.create({
       color: '#666',
     },
     status: {
+      maxWidth: 125,  
+      flexWrap: 'wrap',
       fontWeight: '600',
     },
     date: {
