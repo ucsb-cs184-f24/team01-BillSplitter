@@ -1,16 +1,29 @@
 // HomeScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, RefreshControl } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, RefreshControl, Dimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import firebase from '../firebaseConfig';
 import { categories } from '../components/CategorySelector';
 import BillCard from '../components/BillCard';
+import { SceneMap, TabBar, TabView } from 'react-native-tab-view';
 
 const HomeScreen = ({ navigation }) => {
   const [userEmail, setUserEmail] = useState('');
-  const [payments, setPayments] = useState([]);
+  const [payments, setPayments] = useState({
+    unpaidBills: [],
+    createdBills: [],
+    receivedBills: [], 
+    pastBills: []
+  });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: 'unpaid', title: 'Unpaid' },
+    { key: 'created', title: 'Created' },
+    { key: 'received', title: 'Received' },
+    { key: 'past', title: 'Past' },
+  ]);
   
   const currentUser = firebase.auth().currentUser;
   const db = firebase.firestore();
@@ -60,29 +73,38 @@ const HomeScreen = ({ navigation }) => {
 
       const paymentsData = await Promise.all(paymentsPromises);
       
-      const pendingPayments = paymentsData
-        .filter(payment => !payment.isCreator && payment.status === 'pending')
+      const unpaidBills = paymentsData
+        .filter(payment => 
+          (!payment.isCreator && payment.status === 'pending') ||
+          (payment.isCreator && payment.totalPending > 0)
+        )
         .sort((a, b) => b.createdAt - a.createdAt);
 
-      const pendingCollections = paymentsData
-        .filter(payment => payment.isCreator && payment.totalPending > 0)
-        .sort((a, b) => b.totalPending - a.totalPending);
+      const createdBills = paymentsData
+        .filter(payment => 
+          payment.isCreator && payment.totalPending === 0
+        )
+        .sort((a, b) => b.createdAt - a.createdAt);
 
-      const resolvedPayments = paymentsData
+      const receivedBills = paymentsData
+        .filter(payment => 
+          !payment.isCreator && payment.status === 'paid'
+        )
+        .sort((a, b) => b.createdAt - a.createdAt);
+
+      const pastBills = paymentsData
         .filter(payment => 
           (payment.isCreator && payment.totalPending === 0) || 
           (!payment.isCreator && payment.status === 'paid')
         )
-        .sort((a, b) => b.createdAt - a.createdAt)
-        .slice(0, 5);
+        .sort((a, b) => b.createdAt - a.createdAt);
       
-      const filteredPayments = [
-        ...pendingPayments,
-        ...pendingCollections,
-        ...resolvedPayments
-      ];
-      
-      setPayments(filteredPayments);
+      setPayments({
+        unpaidBills,
+        createdBills,
+        receivedBills,
+        pastBills
+      });
     } catch (error) {
       console.error('Error fetching payments:', error);
     }
@@ -122,15 +144,58 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  const renderPayment = ({ item }) => (
-    <BillCard
-      item={item}
-      currentUser={currentUser}
-      onPress={() => navigation.navigate('BillDetails', { billId: item.billId })}
-      onPaymentPress={handlePayment}
+  const renderBillList = (bills) => {
+    return (
+      <FlatList
+        data={bills}
+        renderItem={({ item }) => (
+          <BillCard
+            item={item}
+            currentUser={currentUser}
+            onPress={() => navigation.navigate('BillDetails', { billId: item.billId })}
+            onPaymentPress={handlePayment}
+          />
+        )}
+        keyExtractor={item => item.id}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#34C759"
+            colors={['#34C759']}
+          />
+        }
+        ListEmptyComponent={() => (
+          <Text style={styles.emptyText}>No bills found</Text>
+        )}
+        contentContainerStyle={styles.listContent}
+      />
+    );
+  };
+
+  const UnpaidBills = () => renderBillList(payments.unpaidBills || []);
+  const CreatedBills = () => renderBillList(payments.createdBills || []);
+  const ReceivedBills = () => renderBillList(payments.receivedBills || []);
+  const PastBills = () => renderBillList(payments.pastBills || []);
+
+  const renderScene = SceneMap({
+    unpaid: UnpaidBills,
+    created: CreatedBills,
+    received: ReceivedBills,
+    past: PastBills,
+  });
+
+  const renderTabBar = props => (
+    <TabBar
+      {...props}
+      indicatorStyle={styles.tabIndicator}
+      style={styles.tabBar}
+      labelStyle={styles.tabLabel}
+      activeColor="#34C759"
+      inactiveColor="#666"
     />
   );
-  
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -139,31 +204,15 @@ const HomeScreen = ({ navigation }) => {
         {loading ? (
           <Text style={styles.loading}>Loading payments...</Text>
         ) : (
-          <FlatList
-            data={payments}
-            renderItem={renderPayment}
-            keyExtractor={item => item.id}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                tintColor="#34C759"
-                colors={['#34C759']}
-              />
-            }
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>No payments found</Text>
-            }
+          <TabView
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            renderTabBar={renderTabBar}
+            onIndexChange={setIndex}
+            initialLayout={{ width: Dimensions.get('window').width }}
+            swipeEnabled={true}
           />
         )}
-
-        <TouchableOpacity 
-          style={styles.addButton}
-          onPress={() => navigation.navigate('ManualAddScreen')}
-        >
-          <Text style={styles.addButtonText}>Add New Bill</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -177,12 +226,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',
-    padding: 20,
   },
   welcome: {
     fontSize: 34,
     fontWeight: 'bold',
+    marginHorizontal: 20,
     marginBottom: 20,
+    marginTop: 10,
   },
   paymentCard: {
     padding: 15,
@@ -250,18 +300,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
   },
-  addButton: {
-    backgroundColor: '#34C759',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   loading: {
     textAlign: 'center',
     marginTop: 20,
@@ -271,6 +309,35 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     color: '#666',
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  tabBar: {
+    backgroundColor: '#fff',
+    elevation: 0,
+    shadowOpacity: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  tabIndicator: {
+    backgroundColor: '#34C759',
+    height: 3,
+  },
+  tabLabel: {
+    textTransform: 'none',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  listContent: {
+    padding: 20,
+    paddingTop: 10,
   },
 });
 
