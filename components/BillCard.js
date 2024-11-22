@@ -39,7 +39,7 @@ const BillCard = ({
     if (item.isCreator) {
       return item.totalPending > 0 ? '#FF9500' : '#34C759';
     }
-    return item.status === 'paid' ? '#34C759' : '#FF3B30';  // Changed to red for money owed
+    return item.status === 'paid' ? '#34C759' : '#FF3B30';  
   };
 
   const renderAmountText = () => {
@@ -103,7 +103,7 @@ const BillCard = ({
           
           <View style={styles.paymentFooter}>
             {renderAmountText()}
-            <Text style={[styles.status, { color: getStatusColor() }]}>
+            <Text style={[styles.status, { color: getStatusColor() }]} numberOfLines={2}>
               {renderStatus()}
             </Text>
           </View>
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
     },
     amountOwed: {
-      color: '#FF3B30',  // Red color for amounts you owe
+      color: '#FF3B30',  
     },
     description: {
       fontSize: 14,
@@ -183,6 +183,8 @@ const styles = StyleSheet.create({
       color: '#666',
     },
     status: {
+      maxWidth: 125,  
+      flexWrap: 'wrap',
       fontWeight: '600',
     },
     date: {

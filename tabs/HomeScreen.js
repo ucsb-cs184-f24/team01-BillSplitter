@@ -231,6 +231,7 @@ const HomeScreen = ({ navigation }) => {
       labelStyle={styles.tabLabel}
       activeColor="#34C759"
       inactiveColor="#666"
+      tabStyle={{ paddingHorizontal: 3 }}
     />
   );
 
