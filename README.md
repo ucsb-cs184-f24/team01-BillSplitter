@@ -17,7 +17,7 @@ View the history of all split bills, categorized as sent or received. Use it to 
 ## Enviroment
 see: https://reactnative.dev/docs/set-up-your-environment for more in-depth guide
 * 1. clone repo:
-  > git clone https://github.com/your-repo-name/better-bill-splitter.git
+  > git clone https://github.com/your-repo-name/better-bill-splitter.git](https://github.com/ucsb-cs184-f24/team01-BillSplitter.git
 * 2. Install dependencies:
   > brew install node
   > brew install watchman
