@@ -117,8 +117,8 @@ const AddWithPictureScreen = ({ navigation }) => {
       }, {
         headers: {
           'Content-Type': 'application/json',
-          'Client-Id': 'vrfgg8zdNriSgmwfeFtvn60sLZXXDTgGyf52Tt1',
-          'Authorization': 'apikey nadavavital:5bd7d76e76268b00d6ce8418e2726b51',
+          'Client-Id': 'vrflPYcnXzj1zDu5XpoVszxp2G3pBGxzX7XkmlB',
+          'Authorization': 'apikey ojonokuchi:03e010f70bfc29ff68c30bd6849fc46f',
         }
       });
 
