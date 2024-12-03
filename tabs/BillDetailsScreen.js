@@ -103,7 +103,7 @@ const BillDetailsScreen = ({ route, navigation }) => {
       } catch (error) {
         console.error('Error fetching bill details:', error);
         Alert.alert('Error', 'Failed to load bill details');
-        navigation.goBack();
+        navigation.replace('Main');
       }
     };
 
