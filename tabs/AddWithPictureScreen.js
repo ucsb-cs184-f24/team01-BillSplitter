@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 import axios from 'axios';
 import firebase from '../firebaseConfig';
 import CategorySelector, { categories } from '../components/CategorySelector';
@@ -37,6 +38,7 @@ const AddWithPictureScreen = ({ navigation }) => {
   // UI States
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showFriendSelector, setShowFriendSelector] = useState(false);
+  const [showImagePickerModal, setShowImagePickerModal] = useState(false);
   const [loading, setLoading] = useState(false);
   
   // Split States
@@ -79,7 +81,36 @@ const AddWithPictureScreen = ({ navigation }) => {
     return () => unsubscribe();
   }, []);
 
-  const selectImage = async () => {
+  const takePicture = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    
+    if (!permissionResult.granted) {
+      Alert.alert('Permission Required', 'Please allow access to your camera to take a picture.');
+      return;
+    }
+
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.images,
+        allowsEditing: false,
+        aspect: [3, 4],
+        quality: 0.8,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        setImageUri(result.assets[0].uri);
+        processReceipt(result.assets[0].base64);
+      }
+    } catch (error) {
+      console.error('Camera error:', error);
+      Alert.alert('Error', 'Failed to take picture');
+    } finally {
+      setShowImagePickerModal(false);
+    }
+  };
+
+  const selectFromLibrary = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
     if (!permissionResult.granted) {
@@ -103,6 +134,34 @@ const AddWithPictureScreen = ({ navigation }) => {
     } catch (error) {
       console.error('Image picking error:', error);
       Alert.alert('Error', 'Failed to select image');
+    } finally {
+      setShowImagePickerModal(false);
+    }
+  };
+
+  const selectFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['image/*', 'application/pdf'],
+        copyToCacheDirectory: true,
+      });
+
+      if (result.type === 'success') {
+        const response = await fetch(result.uri);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          const base64data = reader.result.split(',')[1];
+          setImageUri(result.uri);
+          processReceipt(base64data);
+        };
+      }
+    } catch (error) {
+      console.error('File picking error:', error);
+      Alert.alert('Error', 'Failed to select file');
+    } finally {
+      setShowImagePickerModal(false);
     }
   };
 
@@ -307,7 +366,7 @@ const AddWithPictureScreen = ({ navigation }) => {
         <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
           <TouchableOpacity 
             style={styles.imageButton}
-            onPress={selectImage}
+            onPress={() => setShowImagePickerModal(true)}
           >
             {imageUri ? (
               <Image 
@@ -319,7 +378,7 @@ const AddWithPictureScreen = ({ navigation }) => {
               <View style={styles.imagePlaceholder}>
                 <Feather name="camera" size={40} color="#6C47FF" />
                 <Text style={styles.imagePlaceholderText}>
-                  Tap to select receipt image
+                  Tap to add receipt
                 </Text>
               </View>
             )}
@@ -474,6 +533,61 @@ const AddWithPictureScreen = ({ navigation }) => {
           </View>
         </ScrollView>
   
+        {/* Image Picker Modal */}
+        <Modal
+          visible={showImagePickerModal}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setShowImagePickerModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Select Image Source</Text>
+                <TouchableOpacity
+                  onPress={() => setShowImagePickerModal(false)}
+                  style={styles.modalCloseButton}
+                >
+                  <Feather name="x" size={24} color="#333" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.optionsContainer}>
+                <TouchableOpacity
+                  style={styles.squareOption}
+                  onPress={takePicture}
+                >
+                  <View style={styles.iconContainer}>
+                    <Feather name="camera" size={32} color="#6C47FF" />
+                  </View>
+                  <Text style={styles.squareOptionText}>Camera</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.squareOption}
+                  onPress={selectFromLibrary}
+                >
+                  <View style={styles.iconContainer}>
+                    <Feather name="image" size={32} color="#6C47FF" />
+                  </View>
+                  <Text style={styles.squareOptionText}>Gallery</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.squareOption}
+                  onPress={selectFile}
+                >
+                  <View style={styles.iconContainer}>
+                    <Feather name="file" size={32} color="#6C47FF" />
+                  </View>
+                  <Text style={styles.squareOptionText}>File</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Category Selector Modal */}
         <CategorySelector
           showModal={showCategoryModal}
           selectedCategory={category}
@@ -481,6 +595,7 @@ const AddWithPictureScreen = ({ navigation }) => {
           onClose={() => setShowCategoryModal(false)}
         />
   
+        {/* Friend Selector Modal */}
         <Modal
           visible={showFriendSelector}
           transparent={true}
