@@ -300,7 +300,7 @@ const AddWithPictureScreen = ({ navigation }) => {
       );
 
       Alert.alert('Success', 'Bill added and split successfully!');
-      navigation.goBack();
+      navigation.replace('BillDetails', { billId: billRef.id });
     } catch (error) {
       console.error('Error adding bill:', error);
       Alert.alert('Error', 'Failed to add bill');

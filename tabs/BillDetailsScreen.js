@@ -214,7 +214,7 @@ const BillDetailsScreen = ({ route, navigation }) => {
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.replace('Main')}
         >
           <Feather name="arrow-left" size={24} color="#007AFF" />
         </TouchableOpacity>
