@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
@@ -19,6 +19,12 @@ const BillSplitSection = ({
   scrollViewRef,
   friendPositions,
 }) => {
+  const [tempValue, setTempValue] = useState({});
+
+  useEffect(() => {
+    setTempValue({});
+  }, [splitMode, splitType]);
+
   if (selectedFriends.length === 0) {
     return null;
   }
@@ -50,7 +56,7 @@ const BillSplitSection = ({
           onPress={onToggleSplitType}
         >
           <Text style={styles.splitTypeText}>
-            Enter in: {splitType === 'percentage' ? 'Percentages' : 'Amounts'}
+            Currently splitting by: {splitType === 'percentage' ? 'Percentage of total ' : 'Custom amounts '}
           </Text>
           <Feather name="refresh-ccw" size={16} color="#007AFF" />
         </TouchableOpacity>
@@ -64,7 +70,7 @@ const BillSplitSection = ({
         </View>
         <View style={styles.selectedFriendActions}>
           <Text style={[styles.splitAmount, styles.yourSplitAmount]}>
-            ${calculateCurrentUserSplit()}
+            ${calculateCurrentUserSplit().toFixed(2)}
           </Text>
         </View>
       </View>
@@ -88,12 +94,16 @@ const BillSplitSection = ({
               <Text style={styles.selectedFriendEmail}>{friend.email}</Text>
             </View>
             <View style={styles.selectedFriendActions}>
+              <Text style={styles.splitTypeText}>{splitType === 'amount' ? '$' : splitMode === 'custom' ? '%' : ''}</Text>
               {splitMode === 'custom' && (
                 <TextInput
                   style={styles.splitInput}
                   keyboardType="numeric"
-                  value={String(friendSplits[friendId]?.value || '')}
-                  onChangeText={(text) => onUpdateSplitAmount(friendId, text)}
+                  value={tempValue[friendId] !== undefined ? tempValue[friendId] : splitType === 'amount' ? String(friendSplits[friendId]?.value.toFixed(2) || '') : String(friendSplits[friendId]?.value.toFixed(0) || '')}
+                  onChangeText={(text) => {
+                    setTempValue({...tempValue, [friendId]: text});
+                    onUpdateSplitAmount(friendId, parseFloat(text) || 0);
+                  }}
                   onFocus={() => {
                     const yPosition = friendPositions.current[friendId];
                     if (yPosition) {
@@ -104,15 +114,16 @@ const BillSplitSection = ({
                     }
                   }}
                   onEndEditing={() => {
-                    const value = friendSplits[friendId]?.value || 0;
+                    const tempTextValue = tempValue[friendId] || '';
+                    const value = parseFloat(tempTextValue) || 0;
                     onUpdateSplitAmount(friendId, value);
                   }}
-                  placeholder={splitType === 'percentage' ? '%' : '$'}
+                  placeholder={splitType === 'percentage' ? '%0' : '$0.00'}
                   returnKeyType="done"
                 />
               )}
               <Text style={styles.splitAmount}>
-                ${calculateSplitAmount(friendId)}
+                ${calculateSplitAmount(friendId).toFixed(2)}
               </Text>
               <TouchableOpacity
                 style={styles.removeButton}

@@ -339,6 +339,136 @@ export const styles = StyleSheet.create({
       fontWeight: 'bold',
       color: '#1a1a1a',
     },
+    itemsSection: {
+      marginTop: 20,
+    },
+    itemForm: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 15,
+    },
+    itemInput: {
+      flex: 2,
+      marginRight: 10,
+    },
+    itemAmountInput: {
+      flex: 1,
+      marginRight: 10,
+    },
+    addItemButton: {
+      backgroundColor: '#6C47FF',
+      padding: 10,
+      borderRadius: 8,
+    },
+    itemContainer: {
+      backgroundColor: '#f5f5f5',
+      padding: 15,
+      borderRadius: 8,
+      marginBottom: 15,
+    },
+    itemHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    itemName: {
+      fontSize: 16,
+      fontWeight: '500',
+      flex: 2,
+    },
+    itemAmount: {
+      fontSize: 16,
+      fontWeight: '500',
+      marginRight: 15,
+    },
+    splitTypeContainer: {
+      flexDirection: 'row',
+      marginBottom: 20,
+      gap: 12,
+    },
+    splitTypeButton: {
+      flex: 1,
+      backgroundColor: '#F0F0F0',
+      borderRadius: 12,
+      padding: 16,
+      height: 60,
+    },
+    splitTypeButtonActive: {
+      backgroundColor: '#F5F1FF',
+      borderWidth: 2,
+      borderColor: '#6C47FF',
+    },
+    splitTypeContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+    },
+    splitTypeText: {
+      fontSize: 18,
+      color: '#666',
+      fontWeight: '500',
+    },
+    splitTypeTextActive: {
+      color: '#6C47FF',
+      fontWeight: '600',
+    },
+    splitModeRow: {
+      flexDirection: 'row',
+      marginTop: 8,
+      gap: 8,
+    },
+    splitModeButton: {
+      flex: 1,
+      padding: 8,
+      alignItems: 'center',
+    },
+    splitModeButtonActive: {
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: '#6C47FF',
+    },
+    splitModeText: {
+      color: '#6C47FF',
+      fontSize: 14,
+    },
+    splitModeTextActive: {
+      color: '#FFF',
+    },
+    participantsRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginTop: 8,
+      gap: 8,
+    },
+    participantChip: {
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      borderRadius: 16,
+      backgroundColor: '#F5F5F5',
+      borderWidth: 1,
+      borderColor: '#DDD',
+    },
+    participantChipSelected: {
+      backgroundColor: '#F0EBFF',
+      borderColor: '#6C47FF',
+    },
+    participantChipText: {
+      color: '#333',
+      fontSize: 14,
+    },
+    splitSummary: {
+      marginTop: 8,
+      padding: 8,
+      backgroundColor: '#F5F5F5',
+      borderRadius: 8,
+    },
+    splitSummaryText: {
+      fontSize: 14,
+      color: '#333',
+      marginVertical: 2,
+    }
 });
 
 export default styles;

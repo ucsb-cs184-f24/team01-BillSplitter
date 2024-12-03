@@ -103,7 +103,7 @@ const BillDetailsScreen = ({ route, navigation }) => {
       } catch (error) {
         console.error('Error fetching bill details:', error);
         Alert.alert('Error', 'Failed to load bill details');
-        navigation.goBack();
+        navigation.replace('Main');
       }
     };
 
@@ -214,7 +214,7 @@ const BillDetailsScreen = ({ route, navigation }) => {
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.replace('Main')}
         >
           <Feather name="arrow-left" size={24} color="#007AFF" />
         </TouchableOpacity>
