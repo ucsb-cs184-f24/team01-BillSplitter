@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
       color: '#999',
     },
     payButton: {
-      flex: 1,
+      width: '100%',
       padding: 8,
       borderRadius: 8,
       alignItems: 'center',
@@ -207,13 +207,12 @@ const styles = StyleSheet.create({
       lineHeight: 14,
     },
     buttonContainer: {
-      flexDirection: 'row',
+      flexDirection: 'column',
       gap: 10,
       marginTop: 8,
-      alignItems: 'center',
     },
     venmoWrapper: {
-      flex: 1,
+      width: '100%',
       marginTop: 0,
     },
   });
