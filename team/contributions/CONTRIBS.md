@@ -41,4 +41,5 @@
 - Conducted a user survey to gather feedback on app usability and identify areas for improvement.  
 - Implemented user search functionality for easier friend addition.  
 - Redesigned the home page to separate bills by status.  
-- Added the ability to split bills by item during manual entry, addressing user concerns and improving the experience.
+- Added the ability to split bills by item during manual entry and over all wrote code to give manual entry more flexibility, addressing user concerns and improving the experience.
+- Added venmo integration, and constantly looked for area's where small quality of life improvements could be made for users
