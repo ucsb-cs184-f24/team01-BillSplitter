@@ -341,28 +341,6 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '500',
   },
-  changeImageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'center',
-    gap: 8,
-    padding: 0,
-    marginTop: 0,
-  },
-  changeImageText: {
-    color: '#6C47FF',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  maximizeIcon: {
-    position: 'absolute',
-    top: 8,
-    left: 8,
-    zIndex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    padding: 4,
-    borderRadius: 4,
-  },
 });
 
 export default styles;

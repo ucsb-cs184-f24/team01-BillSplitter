@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import firebase from '../firebaseConfig';
-import VenmoUsernameModal from '../components/VenmoUsernameModal';
 
 const AuthScreenWrapper = ({ children }) => (
   <SafeAreaView style={styles.safe}>
@@ -32,12 +31,10 @@ const SignUpScreen = ({ navigation }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [venmoUsername, setVenmoUsername] = useState('');
-  const [showVenmoModal, setShowVenmoModal] = useState(false);
 
   const handleSignUp = async () => {
-    if (!email || !password || !venmoUsername) {
-      setError('Please fill in all required fields (including Venmo username)');
+    if (!email || !password) {
+      setError('Please fill in all required fields');
       return;
     }
     
@@ -54,7 +51,6 @@ const SignUpScreen = ({ navigation }) => {
         .set({
           email: email.toLowerCase(),
           displayName: displayName || email.split('@')[0],
-          venmoUsername,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
 
@@ -113,17 +109,6 @@ const SignUpScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={styles.inputContainer}
-          onPress={() => setShowVenmoModal(true)}
-        >
-          <Feather name="dollar-sign" size={20} color="#6C47FF" style={styles.inputIcon} />
-          <Text style={[styles.input, !venmoUsername && styles.placeholder]}>
-            {venmoUsername || 'Venmo Username (required)'}
-          </Text>
-          <Feather name="chevron-right" size={20} color="#6C47FF" />
-        </TouchableOpacity>
-
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <TouchableOpacity
@@ -153,16 +138,6 @@ const SignUpScreen = ({ navigation }) => {
           <Text style={styles.textLink}>Privacy Policy</Text>
         </Text>
       </View>
-
-      <VenmoUsernameModal
-        visible={showVenmoModal}
-        onClose={() => setShowVenmoModal(false)}
-        onSuccess={(username) => {
-          setVenmoUsername(username);
-          setShowVenmoModal(false);
-        }}
-        initialValue={venmoUsername}
-      />
     </AuthScreenWrapper>
   );
 };
