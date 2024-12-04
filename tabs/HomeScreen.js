@@ -23,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
     { key: 'unpaid', title: 'Unpaid' },
     { key: 'created', title: 'Created' },
     { key: 'received', title: 'Received' },
-    { key: 'past', title: 'Past' },
+    { key: 'settled', title: 'Settled' },
   ]);
   
   const currentUser = firebase.auth().currentUser;
@@ -68,6 +68,10 @@ const HomeScreen = ({ navigation }) => {
         const creatorDoc = await db.collection('users').doc(billData.createdBy).get();
         const creatorData = creatorDoc.data();
 
+        // Get creator's Venmo username from user object
+        const creatorUserDoc = await db.collection('users').doc(billData.createdBy).get();
+        const creatorUserData = creatorUserDoc.data();
+
         return {
           id: doc.id,
           ...payment,
@@ -78,6 +82,7 @@ const HomeScreen = ({ navigation }) => {
           category: billData.category || 'other',
           createdBy: billData.createdBy,
           creatorName: billData.createdBy === currentUser.uid ? 'You' : (creatorData.displayName || creatorData.email),
+          creatorVenmoUsername: creatorUserData?.venmoUsername || null,
           createdAt: billData.createdAt?.toDate() || new Date(),
           pendingUsers: pendingUsersData.map(p => p.name),
           pendingAmounts: pendingUsersData.map(p => p.amount),
@@ -96,15 +101,11 @@ const HomeScreen = ({ navigation }) => {
         .sort((a, b) => b.createdAt - a.createdAt);
 
       const createdBills = paymentsData
-        .filter(payment => 
-          payment.isCreator && payment.totalPending === 0
-        )
+        .filter(payment => payment.isCreator)
         .sort((a, b) => b.createdAt - a.createdAt);
 
       const receivedBills = paymentsData
-        .filter(payment => 
-          !payment.isCreator && payment.status === 'paid'
-        )
+        .filter(payment => !payment.isCreator)
         .sort((a, b) => b.createdAt - a.createdAt);
 
       const pastBills = paymentsData
@@ -169,6 +170,7 @@ const HomeScreen = ({ navigation }) => {
             currentUser={currentUser}
             onPress={() => navigation.navigate('BillDetails', { billId: item.billId })}
             onPaymentPress={handlePayment}
+            creatorId={item.createdBy}
           />
         )}
         keyExtractor={item => item.id}
@@ -220,7 +222,7 @@ const HomeScreen = ({ navigation }) => {
     unpaid: UnpaidBills,
     created: CreatedBills,
     received: ReceivedBills,
-    past: PastBills,
+    settled: PastBills,
   });
 
   const renderTabBar = props => (

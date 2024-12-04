@@ -11,10 +11,12 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import firebase from '../firebaseConfig';
+import VenmoUsernameModal from '../components/VenmoUsernameModal';
 
 const SettingsScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
+  const [isVenmoModalVisible, setIsVenmoModalVisible] = useState(false);
 
   useEffect(() => {
     const currentUser = firebase.auth().currentUser;
@@ -66,6 +68,14 @@ const SettingsScreen = ({ navigation }) => {
         },
       ],
     );
+  };
+
+  const handleVenmoSuccess = (username) => {
+    setUserProfile(prev => ({
+      ...prev,
+      venmoUsername: username
+    }));
+    Alert.alert('Success', 'Venmo username updated successfully');
   };
 
   const SettingsGroup = ({ title, children }) => (
@@ -120,6 +130,12 @@ const SettingsScreen = ({ navigation }) => {
             title="Profile"
             subtitle={userProfile?.email}
           />
+          <SettingsItem
+            icon="dollar-sign"
+            title="Venmo Username"
+            subtitle={userProfile?.venmoUsername || 'Not set'}
+            onPress={() => setIsVenmoModalVisible(true)}
+          />
         </SettingsGroup>
 
         <SettingsGroup title="Bills">
@@ -134,6 +150,12 @@ const SettingsScreen = ({ navigation }) => {
             title="Friends"
             subtitle="Manage your friends list"
             onPress={() => navigation.navigate('Friends')}
+          />
+          <SettingsItem
+            icon="credit-card"
+            title="Venmo Test"
+            subtitle="Test Venmo integration"
+            onPress={() => navigation.navigate('VenmoTest')}
           />
         </SettingsGroup>
 
@@ -159,6 +181,13 @@ const SettingsScreen = ({ navigation }) => {
           Bill Splitting App © 2024
         </Text>
       </ScrollView>
+      
+      <VenmoUsernameModal
+        visible={isVenmoModalVisible}
+        onClose={() => setIsVenmoModalVisible(false)}
+        onSuccess={handleVenmoSuccess}
+        initialValue={userProfile?.venmoUsername || ''}
+      />
     </SafeAreaView>
   );
 };
