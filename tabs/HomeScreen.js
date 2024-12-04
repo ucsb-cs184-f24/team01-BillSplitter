@@ -68,6 +68,10 @@ const HomeScreen = ({ navigation }) => {
         const creatorDoc = await db.collection('users').doc(billData.createdBy).get();
         const creatorData = creatorDoc.data();
 
+        // Get creator's Venmo username from user object
+        const creatorUserDoc = await db.collection('users').doc(billData.createdBy).get();
+        const creatorUserData = creatorUserDoc.data();
+
         return {
           id: doc.id,
           ...payment,
@@ -78,6 +82,7 @@ const HomeScreen = ({ navigation }) => {
           category: billData.category || 'other',
           createdBy: billData.createdBy,
           creatorName: billData.createdBy === currentUser.uid ? 'You' : (creatorData.displayName || creatorData.email),
+          creatorVenmoUsername: creatorUserData?.venmoUsername || null,
           createdAt: billData.createdAt?.toDate() || new Date(),
           pendingUsers: pendingUsersData.map(p => p.name),
           pendingAmounts: pendingUsersData.map(p => p.amount),
@@ -169,6 +174,7 @@ const HomeScreen = ({ navigation }) => {
             currentUser={currentUser}
             onPress={() => navigation.navigate('BillDetails', { billId: item.billId })}
             onPaymentPress={handlePayment}
+            creatorId={item.createdBy}
           />
         )}
         keyExtractor={item => item.id}

@@ -2,12 +2,14 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { categories } from './CategorySelector';
+import VenmoLinker from './VenmoLinker';
 
 const BillCard = ({ 
   item, 
   currentUser, 
   onPress, 
-  onPaymentPress 
+  onPaymentPress,
+  creatorId 
 }) => {
   const getCategoryColor = (categoryId) => {
     const category = categories.find(cat => cat.id === categoryId);
@@ -30,7 +32,8 @@ const BillCard = ({
       return 'Received';
     }
     if (item.status === 'paid') {
-      return 'You paid';
+      const date = item.paidAt?.toDate();
+      return `Paid${date ? ` on ${date.toLocaleDateString()}` : ''}`;
     }
     return 'You owe';
   };
@@ -40,21 +43,6 @@ const BillCard = ({
       return item.totalPending > 0 ? '#FF9500' : '#34C759';
     }
     return item.status === 'paid' ? '#34C759' : '#FF3B30';  
-  };
-
-  const renderAmountText = () => {
-    if (item.isCreator) {
-      return (
-        <Text style={styles.createdBy}>
-          Requested by {item.creatorName}
-        </Text>
-      );
-    }
-    return (
-      <Text style={styles.createdBy}>
-        {item.status === 'paid' ? 'Paid to' : 'You owe'} {item.creatorName}
-      </Text>
-    );
   };
 
   const getPendingText = (totalPending, pendingUsers) => {
@@ -102,26 +90,38 @@ const BillCard = ({
           ) : null}
           
           <View style={styles.paymentFooter}>
-            {renderAmountText()}
+            <Text style={styles.date}>
+              Creation Date: {item.createdAt.toLocaleDateString()}
+            </Text>
             <Text style={[styles.status, { color: getStatusColor() }]} numberOfLines={2}>
               {renderStatus()}
             </Text>
           </View>
           
-          <Text style={styles.date}>
-            {item.createdAt.toLocaleDateString()}
+          <Text style={styles.createdBy}>
+            Creator: {item.creatorName}
           </Text>
-  
+          
           {!item.isCreator && item.status === 'pending' && (
-            <TouchableOpacity
-              style={[styles.payButton, { backgroundColor: getCategoryColor(item.category) }]}
-              onPress={(e) => {
-                e.stopPropagation();
-                onPaymentPress(item.id);
-              }}
-            >
-              <Text style={styles.payButtonText}>Pay Now</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              {item.creatorVenmoUsername && (
+                <View style={styles.venmoWrapper}>
+                  <VenmoLinker
+                    recipientId={item.creatorVenmoUsername}
+                    buttonText="Pay with Venmo"
+                  />
+                </View>
+              )}
+              <TouchableOpacity
+                style={[styles.payButton, { backgroundColor: getCategoryColor(item.category) }]}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  onPaymentPress(item.id);
+                }}
+              >
+                <Text style={styles.payButtonText}>Mark as Paid</Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
       </View>
@@ -192,14 +192,28 @@ const styles = StyleSheet.create({
       color: '#999',
     },
     payButton: {
-      padding: 10,
+      flex: 1,
+      padding: 8,
       borderRadius: 8,
-      marginTop: 10,
       alignItems: 'center',
+      height: 35,
+      justifyContent: 'center',
     },
     payButtonText: {
       color: '#fff',
       fontWeight: '600',
+      fontSize: 14,
+      lineHeight: 14,
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      gap: 10,
+      marginTop: 8,
+      alignItems: 'center',
+    },
+    venmoWrapper: {
+      flex: 1,
+      marginTop: 0,
     },
   });
 

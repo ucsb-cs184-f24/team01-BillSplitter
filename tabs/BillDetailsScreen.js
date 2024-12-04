@@ -14,6 +14,7 @@ import { Feather } from '@expo/vector-icons';
 import ImageView from "react-native-image-viewing";
 import firebase from '../firebaseConfig';
 import { categories } from '../components/CategorySelector';
+import VenmoLinker from '../components/VenmoLinker';
 
 
 const BillDetailsScreen = ({ route, navigation }) => {
@@ -330,23 +331,48 @@ const BillDetailsScreen = ({ route, navigation }) => {
                   </Text>
                 </View>
 
-                <View style={styles.paymentStatus}>
-                  {payment.status === 'pending' && !isCurrentUserPayment && 
-                   billDetails.createdBy === currentUser.uid && (
-                    <TouchableOpacity
-                      style={[styles.payButton, { backgroundColor: categoryDetails.color }]}
-                      onPress={() => handleMarkAsPaid(payment.id)}
-                    >
-                      <Text style={styles.payButtonText}>Mark as Paid</Text>
-                    </TouchableOpacity>
-                  )}
-                  <Text style={[
-                    styles.statusBadge,
-                    { color: payment.status === 'paid' ? '#34C759' : categoryDetails.color }
-                  ]}>
+                {payment.status === 'pending' && (
+                  <View style={styles.paymentActions}>
+                    {isCurrentUserPayment ? (
+                      <View style={styles.paymentButtons}>
+                        {billDetails.creator?.venmoUsername && (
+                          <View style={styles.buttonWrapper}>
+                            <VenmoLinker
+                              recipientId={billDetails.creator.venmoUsername}
+                              buttonText="Pay with Venmo"
+                            />
+                          </View>
+                        )}
+                        <View style={styles.buttonWrapper}>
+                          <TouchableOpacity
+                            style={[styles.payButton, { backgroundColor: categoryDetails.color }]}
+                            onPress={() => handleMarkAsPaid(payment.id)}
+                          >
+                            <Text style={styles.payButtonText}>Mark as Paid</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    ) : billDetails.createdBy === currentUser.uid && (
+                      <View style={styles.buttonWrapper}>
+                        <TouchableOpacity
+                          style={[styles.payButton, { backgroundColor: categoryDetails.color }]}
+                          onPress={() => handleMarkAsPaid(payment.id)}
+                        >
+                          <Text style={styles.payButtonText}>Mark as Paid</Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                    <Text style={[styles.statusBadge, { color: categoryDetails.color }]}>
+                      {payment.status.toUpperCase()}
+                    </Text>
+                  </View>
+                )}
+
+                {payment.status === 'paid' && (
+                  <Text style={[styles.statusBadge, { color: '#34C759' }]}>
                     {payment.status.toUpperCase()}
                   </Text>
-                </View>
+                )}
               </View>
             );
           })}
@@ -509,35 +535,33 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderLeftWidth: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   paymentInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
-  participantName: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  paymentAmount: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  paymentStatus: {
+  paymentActions: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  paymentButtons: {
+    flexDirection: 'row',
+    flex: 1,
+    gap: 8,
+  },
+  buttonWrapper: {
+    flex: 1,
   },
   payButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 8,
+    paddingHorizontal: 12,
   },
   payButtonText: {
     color: '#fff',
@@ -547,7 +571,45 @@ const styles = StyleSheet.create({
   statusBadge: {
     fontSize: 14,
     fontWeight: '600',
-  }
+  },
+  participantName: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  paymentAmount: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  paymentActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  paymentButtons: {
+    flexDirection: 'row',
+    flex: 1,
+    gap: 8,
+  },
+  buttonWrapper: {
+    flex: 1,
+  },
+  payButton: {
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+  },
+  payButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  statusBadge: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
 });
 
 export default BillDetailsScreen;

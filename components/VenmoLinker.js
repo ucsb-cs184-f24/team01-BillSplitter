@@ -53,18 +53,22 @@ const VenmoLinker = ({ recipientId, buttonText = 'Pay with Venmo' }) => {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: '#3D95CE',
-    padding: 16,
+    padding: 8,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 16,
+    height: 35,
+    justifyContent: 'center',
+    marginTop: 0,
+    marginBottom: 0,
   },
   buttonDisabled: {
     backgroundColor: '#9FCAE8',
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
+    lineHeight: 14,
   },
   modalContainer: {
     flex: 1,
