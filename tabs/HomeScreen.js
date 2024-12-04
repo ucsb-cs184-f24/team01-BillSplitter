@@ -23,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
     { key: 'unpaid', title: 'Unpaid' },
     { key: 'created', title: 'Created' },
     { key: 'received', title: 'Received' },
-    { key: 'past', title: 'Past' },
+    { key: 'settled', title: 'Settled' },
   ]);
   
   const currentUser = firebase.auth().currentUser;
@@ -101,15 +101,11 @@ const HomeScreen = ({ navigation }) => {
         .sort((a, b) => b.createdAt - a.createdAt);
 
       const createdBills = paymentsData
-        .filter(payment => 
-          payment.isCreator && payment.totalPending === 0
-        )
+        .filter(payment => payment.isCreator)
         .sort((a, b) => b.createdAt - a.createdAt);
 
       const receivedBills = paymentsData
-        .filter(payment => 
-          !payment.isCreator && payment.status === 'paid'
-        )
+        .filter(payment => !payment.isCreator)
         .sort((a, b) => b.createdAt - a.createdAt);
 
       const pastBills = paymentsData
@@ -226,7 +222,7 @@ const HomeScreen = ({ navigation }) => {
     unpaid: UnpaidBills,
     created: CreatedBills,
     received: ReceivedBills,
-    past: PastBills,
+    settled: PastBills,
   });
 
   const renderTabBar = props => (
