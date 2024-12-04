@@ -21,6 +21,7 @@ import axios from 'axios';
 import firebase from '../firebaseConfig';
 import CategorySelector, { categories } from '../components/CategorySelector';
 import styles from '../styles/AddWithPictureScreenStyles';
+import ImageView from "react-native-image-viewing";
 
 const AddWithPictureScreen = ({ navigation }) => {
   // Image and Receipt Data States
@@ -182,7 +183,15 @@ const AddWithPictureScreen = ({ navigation }) => {
       });
 
       if (response.data.line_items) {
-        setItems(response.data.line_items);
+        const lineItems = [...response.data.line_items];
+        if (response.data.tax) {
+          lineItems.push({
+            description: 'Tax',
+            total: response.data.tax,
+            isSystemGenerated: true
+          });
+        }
+        setItems(lineItems);
         
         if (response.data.total) {
           setBillAmount(response.data.total.toString());
@@ -347,6 +356,8 @@ const AddWithPictureScreen = ({ navigation }) => {
     });
   };
 
+  const [isImageVisible, setIsImageVisible] = useState(false);
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView 
@@ -364,25 +375,59 @@ const AddWithPictureScreen = ({ navigation }) => {
         </View>
   
         <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
-          <TouchableOpacity 
-            style={styles.imageButton}
-            onPress={() => setShowImagePickerModal(true)}
-          >
-            {imageUri ? (
-              <Image 
-                source={{ uri: imageUri }} 
-                style={styles.selectedImage}
-                resizeMode="contain"
+          <View style={styles.imageSection}>
+            <View style={styles.imageContainer}>
+              <TouchableOpacity 
+                style={styles.imageButton}
+                onPress={() => imageUri ? setIsImageVisible(true) : setShowImagePickerModal(true)}
+              >
+                {imageUri ? (
+                  <View style={styles.imageWrapper}>
+                    <View style={styles.maximizeIcon}>
+                      <Feather name="maximize" size={16} color="#666" />
+                    </View>
+                    <Image 
+                      source={{ uri: imageUri }} 
+                      style={styles.selectedImage}
+                      resizeMode="contain"
+                    />
+                    <View style={styles.imageHintContainer}>
+                      <Feather name="maximize" size={16} color="#666" />
+                      <Text style={styles.imageHintText}>Tap to view</Text>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={styles.imagePlaceholder}>
+                    <Feather name="camera" size={40} color="#6C47FF" />
+                    <Text style={styles.imagePlaceholderText}>
+                      Tap to add receipt
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+
+              {imageUri && (
+                <TouchableOpacity 
+                  style={styles.changeImageButton}
+                  onPress={() => setShowImagePickerModal(true)}
+                >
+                  <Feather name="camera" size={16} color="#6C47FF" />
+                  <Text style={styles.changeImageText}>Select another image</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {imageUri && (
+              <ImageView
+                images={[{ uri: imageUri }]}
+                imageIndex={0}
+                visible={isImageVisible}
+                onRequestClose={() => setIsImageVisible(false)}
+                doubleTapToZoomEnabled={true}
+                presentationStyle="overFullScreen"
               />
-            ) : (
-              <View style={styles.imagePlaceholder}>
-                <Feather name="camera" size={40} color="#6C47FF" />
-                <Text style={styles.imagePlaceholderText}>
-                  Tap to add receipt
-                </Text>
-              </View>
             )}
-          </TouchableOpacity>
+          </View>
   
           {processing && (
             <View style={styles.processingContainer}>

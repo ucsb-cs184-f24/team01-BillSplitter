@@ -109,6 +109,7 @@ const BillCard = ({
                   <VenmoLinker
                     recipientId={item.creatorVenmoUsername}
                     buttonText="Pay with Venmo"
+                    amount={!item.isCreator && item.status === 'pending' ? item.amount : null}
                   />
                 </View>
               )}
