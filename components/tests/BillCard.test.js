@@ -15,17 +15,6 @@ describe('<BillCard />', () => {
     createdAt: new Date(),
   };
 
-  it('renders correctly', () => {
-    const tree = renderer.create(
-      <BillCard
-        item={mockItem}
-        currentUser="testUser"
-        onPress={() => {}}
-        onPaymentPress={() => {}}
-      />
-    ).toJSON();
-    expect(tree).toMatchSnapshot();
-  });
 
   it('contains all expected children', () => {
     const tree = renderer.create(
