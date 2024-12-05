@@ -1,0 +1,1 @@
+I added tests under components/tests. I also had to create a __mocks__ folder that creates mocks that allows componenets to be rendered
