@@ -17,7 +17,6 @@ import { OutgoingRequestCard } from '../components/OutgoingRequestCard';
 import { FriendCard } from '../components/FriendCard';
 import { UserSearchResultsModal } from '../components/UserSearchResultsModal';
 import { GroupModal } from '../components/GroupModal'; 
-import { GroupDetailsModal } from '../components/GroupDetailsModal'; // New component we'll create
 
 const FriendsScreen = () => {
   const [friends, setFriends] = useState([]);
