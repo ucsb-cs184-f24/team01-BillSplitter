@@ -79,14 +79,19 @@ const SpendingInsightsScreen = ({ navigation }) => {
               color: getCategoryColor(category)
             }))
             .sort((a, b) => b.amount - a.amount),
-          recentTransactions: paymentsSnapshot.docs.slice(0, 5).map(doc => {
+          recentTransactions: await Promise.all(paymentsSnapshot.docs.slice(0, 5).map(async (doc) => {
             const payment = doc.data();
+
+            const billDoc = await db.collection('bills').doc(payment.billId).get();
+            const billTitle = billDoc.exists ? billDoc.data().title : 'Unnamed Bill';
+
             return {
               id: doc.id,
+              title: billTitle,
               amount: payment.amount,
               paidAt: payment.paidAt?.toDate() || new Date(),
             };
-          })
+          }))
         };
 
         setInsights(insights);
@@ -217,15 +222,18 @@ const SpendingInsightsScreen = ({ navigation }) => {
           <Text style={styles.recentTransactionsTitle}>Recent Transactions</Text>
           {insights.recentTransactions.map((transaction, index) => (
             <View key={index} style={styles.transactionItem}>
-              <Text style={styles.transactionDate}>
-                {transaction.paidAt.toLocaleDateString()}
-              </Text>
+              <View style={styles.transactionDetails}>
+                <Text style={styles.transactionTitle}>{transaction.title}</Text>
+                <Text style={styles.transactionDate}>
+                  {transaction.paidAt.toLocaleDateString()}
+                </Text>
+              </View>
               <Text style={styles.transactionAmount}>
                 ${transaction.amount.toFixed(2)}
               </Text>
             </View>
           ))}
-        </View>
+      </View>
       </ScrollView>
     </SafeAreaView>
   );
