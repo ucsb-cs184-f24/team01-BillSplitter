@@ -121,9 +121,16 @@ const BillCard = ({
             </Text>
           </View>
           
-          <Text style={styles.date}>
-            {item.createdAt.toLocaleDateString()}
-          </Text>
+          <View style={styles.dateContainer}>
+            <Text style={styles.date}>
+              Created on {item.createdAt.toLocaleDateString()}
+            </Text>
+            {item.status === 'paid' && item.paidAt && (
+              <Text style={styles.date}>
+                Paid on {item.paidAt.toDate().toLocaleDateString()}
+              </Text>
+            )}
+          </View>
           
           {!item.isCreator && item.status === 'pending' && (
             <View style={styles.buttonContainer}>
@@ -245,6 +252,12 @@ const styles = StyleSheet.create({
       fontWeight: '600',
       fontSize: 14,
       lineHeight: 14,
+    },
+    dateContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 4,
     },
   });
 

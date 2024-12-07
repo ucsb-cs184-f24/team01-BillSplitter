@@ -196,6 +196,68 @@ const BillDetailsScreen = ({ route, navigation }) => {
     return null;
   };
 
+  const renderPaymentCard = (payment) => {
+    const isCurrentUserPayment = payment.userId === currentUser.uid;
+    const isPending = payment.status === 'pending';
+
+    return (
+      <View 
+        key={payment.id} 
+        style={[
+          styles.paymentCard, 
+          { 
+            borderLeftColor: payment.status === 'paid' ? '#34C759' : categoryDetails.color
+          }
+        ]}
+      >
+        <View style={styles.paymentInfo}>
+          <Text style={styles.participantName}>
+            {getParticipantName(payment.userId)}
+          </Text>
+          <Text style={[styles.paymentAmount, { color: categoryDetails.color }]}>
+            ${payment.amount.toFixed(2)}
+          </Text>
+        </View>
+
+        <View style={styles.paymentStatus}>
+          <Text style={[
+            styles.statusBadge,
+            { color: payment.status === 'paid' ? '#34C759' : categoryDetails.color }
+          ]}>
+            {payment.status.toUpperCase()}
+          </Text>
+        </View>
+
+        {isCurrentUserPayment && isPending && (
+          <View style={styles.paymentButtons}>
+            {billDetails.creator?.venmoUsername && (
+              <TouchableOpacity
+                style={[styles.payButton, { backgroundColor: '#008CFF' }]}
+                onPress={() => {
+                  navigation.navigate('VenmoPayment', {
+                    recipientId: billDetails.creator.venmoUsername,
+                    amount: payment.amount,
+                    userName: billDetails.creator.displayName || billDetails.creator.email,
+                    billTitle: billDetails.title,
+                    paymentId: payment.id,
+                  });
+                }}
+              >
+                <Text style={styles.payButtonText}>Pay with Venmo</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={[styles.payButton, { backgroundColor: '#6C47FF' }]}
+              onPress={() => handleMarkAsPaid(payment.id)}
+            >
+              <Text style={styles.payButtonText}>Mark as Paid</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    );
+  };
+
   if (loading || !billDetails) {
     return (
       <SafeAreaView style={styles.container}>
@@ -314,48 +376,7 @@ const BillDetailsScreen = ({ route, navigation }) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Payments</Text>
-          {payments.map(payment => {
-            const isCurrentUserPayment = payment.userId === currentUser.uid;
-            
-            return (
-              <View 
-                key={payment.id} 
-                style={[
-                  styles.paymentCard, 
-                  { 
-                    borderLeftColor: payment.status === 'paid' ? '#34C759' : categoryDetails.color
-                  }
-                ]}
-              >
-                <View style={styles.paymentInfo}>
-                  <Text style={styles.participantName}>
-                    {getParticipantName(payment.userId)}
-                  </Text>
-                  <Text style={[styles.paymentAmount, { color: categoryDetails.color }]}>
-                    ${payment.amount.toFixed(2)}
-                  </Text>
-                </View>
-
-                <View style={styles.paymentStatus}>
-                  {payment.status === 'pending' && !isCurrentUserPayment && 
-                   billDetails.createdBy === currentUser.uid && (
-                    <TouchableOpacity
-                      style={[styles.payButton, { backgroundColor: categoryDetails.color }]}
-                      onPress={() => handleMarkAsPaid(payment.id)}
-                    >
-                      <Text style={styles.payButtonText}>Mark as Paid</Text>
-                    </TouchableOpacity>
-                  )}
-                  <Text style={[
-                    styles.statusBadge,
-                    { color: payment.status === 'paid' ? '#34C759' : categoryDetails.color }
-                  ]}>
-                    {payment.status.toUpperCase()}
-                  </Text>
-                </View>
-              </View>
-            );
-          })}
+          {payments.map(payment => renderPaymentCard(payment))}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -510,10 +531,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   paymentCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
     padding: 16,
+    borderRadius: 12,
     marginBottom: 12,
+    backgroundColor: '#fff',
     borderLeftWidth: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -527,6 +548,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
+  paymentStatus: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  paymentButtons: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
+  },
+  payButton: {
+    flex: 1,
+    padding: 8,
+    borderRadius: 8,
+    alignItems: 'center',
+    height: 35,
+    justifyContent: 'center',
+  },
+  payButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  statusBadge: {
+    fontWeight: '600',
+    fontSize: 14,
+  },
   participantName: {
     fontSize: 16,
     fontWeight: '500',
@@ -535,25 +584,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  paymentStatus: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  payButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  payButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  statusBadge: {
-    fontSize: 14,
-    fontWeight: '600',
-  }
 });
 
 export default BillDetailsScreen;
