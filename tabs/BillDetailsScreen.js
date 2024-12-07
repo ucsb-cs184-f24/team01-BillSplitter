@@ -28,6 +28,33 @@ const BillDetailsScreen = ({ route, navigation }) => {
   const currentUser = firebase.auth().currentUser;
   const db = firebase.firestore();
 
+  const refreshPayments = async () => {
+    try {
+      const paymentsSnapshot = await db.collection('payments')
+        .where('billId', '==', billId)
+        .get();
+
+      const paymentsData = paymentsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        amount: doc.data().amount || 0,
+        status: doc.data().status || 'pending'
+      }));
+      
+      setPayments(paymentsData);
+    } catch (error) {
+      console.error('Error refreshing payments:', error);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      refreshPayments();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   useEffect(() => {
     const fetchBillDetails = async () => {
       try {
@@ -99,7 +126,7 @@ const BillDetailsScreen = ({ route, navigation }) => {
           receiptItems: billData.receiptItems || [],
         });
 
-        setPayments(paymentsData);
+        await refreshPayments();
         setLoading(false);
       } catch (error) {
         console.error('Error fetching bill details:', error);
