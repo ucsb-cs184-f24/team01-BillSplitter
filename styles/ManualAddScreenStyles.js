@@ -306,14 +306,14 @@ export const styles = StyleSheet.create({
       justifyContent: 'space-between',
     },
     categoryButton: {
-      width: '30%',
-      aspectRatio: 1,
-      borderRadius: 12,
-      padding: 12,
+      flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: 16,
-      backgroundColor: '#F5F1FF',
+      borderColor: '#E0E0E0',
+      borderWidth: 1,
+      borderRadius: 8,
+      padding: 12,
+      backgroundColor: '#fff',
+      width: '70%',
     },
     categoryLabel: {
       marginTop: 8,
@@ -468,7 +468,28 @@ export const styles = StyleSheet.create({
       fontSize: 14,
       color: '#333',
       marginVertical: 2,
-    }
+    },
+    compactCategoryButton: {
+      padding: 6,
+      marginBottom: 8,
+      height: 36,
+    },
+    categoryButtonInner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: '100%',
+    },
+    compactCategoryText: {
+      fontSize: 14,
+      flex: 1,
+      marginLeft: 8,
+      marginRight: 8,
+    },
+    smallLabel: {
+      fontSize: 13,
+      marginBottom: 4,
+    },
 });
 
 export default styles;

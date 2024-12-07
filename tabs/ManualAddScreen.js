@@ -241,7 +241,7 @@ const ManualAddScreen = ({ navigation }) => {
         amount: parseFloat(billAmount),
         title: title,
         description: description || '',
-        category: category,
+        category: category || 'other',
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         createdBy: currentUser.uid,
         status: 'pending',
@@ -530,6 +530,11 @@ const ManualAddScreen = ({ navigation }) => {
     });
   };
 
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.label : 'Other';
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView 
@@ -560,6 +565,24 @@ const ManualAddScreen = ({ navigation }) => {
               value={title}
               onChangeText={setTitle}
             />
+
+            <Text style={[styles.label, styles.smallLabel]}>Category</Text>
+            <TouchableOpacity
+              style={[styles.categoryButton, styles.compactCategoryButton]}
+              onPress={() => setShowCategoryModal(true)}
+            >
+              <View style={styles.categoryButtonInner}>
+                <Feather 
+                  name={selectedCategory?.icon || 'grid'} 
+                  size={16} 
+                  color="#6C47FF" 
+                />
+                <Text style={[styles.categoryButtonText, styles.compactCategoryText]}>
+                  {selectedCategory?.label || 'Other'}
+                </Text>
+                <Feather name="chevron-down" size={16} color="#666" />
+              </View>
+            </TouchableOpacity>
 
             <Text style={styles.label}>How would you like to enter the bill?</Text>
             <View style={styles.splitTypeContainer}>
