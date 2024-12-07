@@ -142,6 +142,20 @@ const HomeScreen = ({ navigation }) => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const unsubscribeFocus = navigation.addListener('focus', () => {
+      // Force TabView layout refresh
+      setIndex(index);
+      
+      // Small delay to ensure proper layout
+      setTimeout(() => {
+        setIndex(index);
+      }, 100);
+    });
+
+    return unsubscribeFocus;
+  }, [navigation, index]);
+
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     await fetchPayments();
@@ -171,6 +185,8 @@ const HomeScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('BillDetails', { billId: item.billId })}
             onPaymentPress={handlePayment}
             creatorId={item.createdBy}
+            billTitle={item.billTitle}
+            paymentId={item.id}
           />
         )}
         keyExtractor={item => item.id}
@@ -245,7 +261,7 @@ const HomeScreen = ({ navigation }) => {
         {loading ? (
           <Text style={styles.loading}>Loading payments...</Text>
         ) : (
-          <>
+          <View style={styles.contentContainer}>
             <View style={styles.tabContainer}>
               <TabView
                 navigationState={{ index, routes }}
@@ -263,7 +279,7 @@ const HomeScreen = ({ navigation }) => {
             >
               <Text style={styles.addButtonText}>Add New Bill</Text>
             </TouchableOpacity>
-          </>
+          </View>
         )}
       </View>
     </SafeAreaView>
@@ -394,6 +410,8 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flex: 1,
+    position: 'relative',
+    zIndex: 0,
   },
   addButton: {
     backgroundColor: '#34C759',
@@ -401,11 +419,18 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     margin: 20,
     alignItems: 'center',
+    position: 'relative',
+    zIndex: 2,
   },
   addButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  contentContainer: {
+    flex: 1,
+    position: 'relative',
+    zIndex: 1,
   },
 });
 

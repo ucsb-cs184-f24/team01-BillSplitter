@@ -2,15 +2,18 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { categories } from './CategorySelector';
-import VenmoLinker from './VenmoLinker';
+import { useNavigation } from '@react-navigation/native';
 
 const BillCard = ({ 
   item, 
   currentUser, 
   onPress, 
   onPaymentPress,
-  creatorId 
+  billTitle,
+  paymentId
 }) => {
+  const navigation = useNavigation();
+
   const getCategoryColor = (categoryId) => {
     const category = categories.find(cat => cat.id === categoryId);
     return category ? category.color : '#6B7280';
@@ -74,7 +77,7 @@ const BillCard = ({
         
         <View style={styles.paymentContent}>
           <View style={styles.paymentHeader}>
-            <Text style={styles.billTitle}>{item.billTitle}</Text>
+            <Text style={styles.billTitle}>{billTitle}</Text>
             <Text style={[
               styles.amount,
               !item.isCreator && item.status === 'pending' && styles.amountOwed
@@ -105,13 +108,20 @@ const BillCard = ({
           {!item.isCreator && item.status === 'pending' && (
             <View style={styles.buttonContainer}>
               {item.creatorVenmoUsername && (
-                <View style={styles.venmoWrapper}>
-                  <VenmoLinker
-                    recipientId={item.creatorVenmoUsername}
-                    buttonText="Pay with Venmo"
-                    amount={!item.isCreator && item.status === 'pending' ? item.amount : null}
-                  />
-                </View>
+                <TouchableOpacity
+                  style={[styles.venmoButton, { backgroundColor: '#008CFF' }]}
+                  onPress={() => {
+                    navigation.navigate('VenmoPayment', {
+                      recipientId: item.creatorVenmoUsername,
+                      amount: item.amount,
+                      userName: item.creatorName,
+                      billTitle: billTitle,
+                      paymentId: paymentId,
+                    });
+                  }}
+                >
+                  <Text style={styles.venmoButtonText}>Pay with Venmo</Text>
+                </TouchableOpacity>
               )}
               <TouchableOpacity
                 style={[styles.payButton, { backgroundColor: getCategoryColor(item.category) }]}
@@ -215,6 +225,20 @@ const styles = StyleSheet.create({
     venmoWrapper: {
       flex: 1,
       marginTop: 0,
+    },
+    venmoButton: {
+      flex: 1,
+      padding: 8,
+      borderRadius: 8,
+      alignItems: 'center',
+      height: 35,
+      justifyContent: 'center',
+    },
+    venmoButtonText: {
+      color: '#fff',
+      fontWeight: '600',
+      fontSize: 14,
+      lineHeight: 14,
     },
   });
 
