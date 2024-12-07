@@ -383,16 +383,16 @@ const BillDetailsScreen = ({ route, navigation }) => {
               <View key={index} style={styles.receiptItem}>
                 <View style={styles.receiptItemHeader}>
                   <Text style={styles.itemDescription}>
-                    {item.description || `Item ${index + 1}`}
+                    {item.description}
                   </Text>
                   <Text style={[styles.itemAmount, { color: categoryDetails.color }]}>
-                    ${item.total ? item.total.toFixed(2) : '0.00'}
+                    ${parseFloat(item.total).toFixed(2)}
                   </Text>
                 </View>
                 <Text style={styles.itemSharedBy}>
-                  Split between: {item.assignments?.map(userId => 
-                    getParticipantName(userId)
-                  ).join(', ')}
+                  Split between: {item.assignments?.length > 0 
+                    ? item.assignments.map(userId => getParticipantName(userId)).join(', ')
+                    : 'All participants'}
                 </Text>
               </View>
             ))}

@@ -194,9 +194,9 @@ const ManualAddScreen = ({ navigation }) => {
 
     setItems(prev => [...prev, {
       id: Date.now().toString(),
-      name: currentItem.name,
-      amount: parseFloat(currentItem.amount),
-      splits: [currentUser.uid]
+      description: currentItem.name,
+      total: parseFloat(currentItem.amount),
+      assignments: [currentUser.uid]
     }]);
 
     setBillAmount(prev => {
@@ -216,7 +216,7 @@ const ManualAddScreen = ({ navigation }) => {
       
       setBillAmount(prev => {
         const prevAmount = parseFloat(prev) || 0;
-        return (prevAmount - itemToRemove.amount).toString();
+        return (prevAmount - itemToRemove.total).toString();
       });
       
       return newItems;
@@ -236,7 +236,7 @@ const ManualAddScreen = ({ navigation }) => {
 
     setLoading(true);
     try {
-      // Create bill document
+      // Create bill document with the correct item structure
       const billRef = await db.collection('bills').add({
         amount: parseFloat(billAmount),
         title: title,
@@ -247,9 +247,10 @@ const ManualAddScreen = ({ navigation }) => {
         status: 'pending',
         participants: [currentUser.uid, ...selectedFriends],
         totalParticipants: selectedFriends.length + 1,
-        receiptItems: billSplitType === 'items'? items.map((item) => ({
-          ...item,
-          assignments: item.splits || [currentUser.uid]
+        receiptItems: billSplitType === 'items' ? items.map(item => ({
+          description: item.description,  // This is already correct from the addItem function
+          total: parseFloat(item.total),  // This is already correct from the addItem function
+          assignments: item.assignments || [currentUser.uid]  // Using assignments from the item
         })) : [],
         splits: totalSplits
       });
@@ -257,8 +258,8 @@ const ManualAddScreen = ({ navigation }) => {
       const individualShares = {};
       if (billSplitType === 'items'){
         items.forEach((item) => {
-          const sharedBy = item.splits;
-          const shareAmount = item.amount / sharedBy.length;
+          const sharedBy = item.assignments;
+          const shareAmount = item.total / sharedBy.length;
           
           sharedBy.forEach(userId => {
             individualShares[userId] = (individualShares[userId] || 0) + shareAmount;
@@ -329,8 +330,8 @@ const ManualAddScreen = ({ navigation }) => {
         {items.map(item => (
           <View key={item.id} style={styles.itemContainer}>
             <View style={styles.itemHeader}>
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemAmount}>${item.amount.toFixed(2)}</Text>
+              <Text style={styles.itemName}>{item.description}</Text>
+              <Text style={styles.itemAmount}>${parseFloat(item.total).toFixed(2)}</Text>
               <TouchableOpacity onPress={() => removeItem(item.id)}>
                 <Feather name="trash-2" size={20} color="#FF4444" />
               </TouchableOpacity>
@@ -481,22 +482,16 @@ const ManualAddScreen = ({ navigation }) => {
 
 
 
-  const toggleItemParticipant = (itemId, friendId) => {
+  const toggleItemParticipant = (itemId, participantId) => {
     setItems(prevItems => {
       return prevItems.map(item => {
         if (item.id === itemId) {
-          let newSplits = [];
-          if (item.splits.includes(friendId)) {
-            // Remove friend if they're already assigned
-            newSplits.sharedBy = item.splits.filter(id => id !== friendId);
-          } else {
-            // Add only the selected friend
-            newSplits = [...item.splits, friendId];
-          }
-          
+          const assignments = item.assignments || [];
           return {
             ...item,
-            splits: newSplits
+            assignments: assignments.includes(participantId)
+              ? assignments.filter(id => id !== participantId)
+              : [...assignments, participantId]
           };
         }
         return item;
@@ -720,8 +715,8 @@ const ManualAddScreen = ({ navigation }) => {
                 {items.map(item => (
                   <View key={item.id} style={styles.itemContainer}>
                     <View style={styles.itemHeader}>
-                      <Text style={styles.itemName}>{item.name}</Text>
-                      <Text style={styles.itemAmount}>${parseFloat(item.amount).toFixed(2)}</Text>
+                      <Text style={styles.itemName}>{item.description}</Text>
+                      <Text style={styles.itemAmount}>${parseFloat(item.total).toFixed(2)}</Text>
                       <TouchableOpacity onPress={() => removeItem(item.id)}>
                         <Feather name="trash-2" size={20} color="#FF4444" />
                       </TouchableOpacity>
@@ -732,7 +727,7 @@ const ManualAddScreen = ({ navigation }) => {
                         <TouchableOpacity
                           style={[
                             styles.participantChip,
-                            item.splits?.includes(currentUser.uid) && styles.participantChipSelected
+                            item.assignments?.includes(currentUser.uid) && styles.participantChipSelected
                           ]}
                           onPress={() => toggleItemParticipant(item.id, currentUser.uid)}
                         >
@@ -745,7 +740,7 @@ const ManualAddScreen = ({ navigation }) => {
                               key={friendId}
                               style={[
                                 styles.participantChip,
-                                item.splits.includes(friendId) && styles.participantChipSelected
+                                item.assignments?.includes(friendId) && styles.participantChipSelected
                               ]}
                               onPress={() => toggleItemParticipant(item.id, friendId)}
                             >
@@ -758,12 +753,12 @@ const ManualAddScreen = ({ navigation }) => {
                       </View>
 
                       <View style={styles.splitSummary}>
-                        {item.splits.map(participantId => {
+                        {item.assignments?.map(participantId => {
                           const isCurrentUser = participantId === currentUser.uid;
                           const friend = friends.find(f => f.id === participantId);
                           const name = isCurrentUser ? 'Me' : 
                             (friend?.name?.split(' ')[0] || friend?.email?.split('@')[0]);
-                          const amount = parseFloat(item.amount) / item.splits.length;
+                          const amount = parseFloat(item.total) / (item.assignments?.length || 1);
 
                           return (
                             <Text key={participantId} style={styles.splitSummaryText}>
@@ -777,7 +772,7 @@ const ManualAddScreen = ({ navigation }) => {
                 ))}
 
                 <Text style={styles.totalAmount}>
-                  Total: ${items.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0).toFixed(2)}
+                  Total: ${items.reduce((sum, item) => sum + parseFloat(item.total || 0), 0).toFixed(2)}
                 </Text>
               </View>
             )}
