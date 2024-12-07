@@ -2,13 +2,18 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { categories } from './CategorySelector';
+import { useNavigation } from '@react-navigation/native';
 
 const BillCard = ({ 
   item, 
   currentUser, 
   onPress, 
-  onPaymentPress 
+  onPaymentPress,
+  billTitle,
+  paymentId
 }) => {
+  const navigation = useNavigation();
+
   const getCategoryColor = (categoryId) => {
     const category = categories.find(cat => cat.id === categoryId);
     return category ? category.color : '#6B7280';
@@ -86,7 +91,7 @@ const BillCard = ({
         
         <View style={styles.paymentContent}>
           <View style={styles.paymentHeader}>
-            <Text style={styles.billTitle}>{item.billTitle}</Text>
+            <Text style={styles.billTitle}>{billTitle}</Text>
             <Text style={[
               styles.amount,
               !item.isCreator && item.status === 'pending' && styles.amountOwed
@@ -102,26 +107,59 @@ const BillCard = ({
           ) : null}
           
           <View style={styles.paymentFooter}>
-            {renderAmountText()}
+            {item.isCreator ? (
+              <Text style={styles.createdBy}>
+                Requested by {item.creatorName}
+              </Text>
+            ) : (
+              <Text style={styles.createdBy}>
+                {item.status === 'paid' ? 'Paid to' : 'You owe'} {item.creatorName}
+              </Text>
+            )}
             <Text style={[styles.status, { color: getStatusColor() }]} numberOfLines={2}>
               {renderStatus()}
             </Text>
           </View>
           
-          <Text style={styles.date}>
-            {item.createdAt.toLocaleDateString()}
-          </Text>
-  
+          <View style={styles.dateContainer}>
+            <Text style={styles.date}>
+              Created on {item.createdAt.toLocaleDateString()}
+            </Text>
+            {item.status === 'paid' && item.paidAt && (
+              <Text style={styles.date}>
+                Paid on {item.paidAt.toDate().toLocaleDateString()}
+              </Text>
+            )}
+          </View>
+          
           {!item.isCreator && item.status === 'pending' && (
-            <TouchableOpacity
-              style={[styles.payButton, { backgroundColor: getCategoryColor(item.category) }]}
-              onPress={(e) => {
-                e.stopPropagation();
-                onPaymentPress(item.id);
-              }}
-            >
-              <Text style={styles.payButtonText}>Pay Now</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              {item.creatorVenmoUsername && (
+                <TouchableOpacity
+                  style={[styles.venmoButton, { backgroundColor: '#008CFF' }]}
+                  onPress={() => {
+                    navigation.navigate('VenmoPayment', {
+                      recipientId: item.creatorVenmoUsername,
+                      amount: item.amount,
+                      userName: item.creatorName,
+                      billTitle: billTitle,
+                      paymentId: paymentId,
+                    });
+                  }}
+                >
+                  <Text style={styles.venmoButtonText}>Pay with Venmo</Text>
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity
+                style={[styles.payButton, { backgroundColor: getCategoryColor(item.category) }]}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  onPaymentPress(item.id);
+                }}
+              >
+                <Text style={styles.payButtonText}>Mark as Paid</Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
       </View>
@@ -200,6 +238,26 @@ const styles = StyleSheet.create({
     payButtonText: {
       color: '#fff',
       fontWeight: '600',
+    },
+    venmoButton: {
+      flex: 1,
+      padding: 8,
+      borderRadius: 8,
+      alignItems: 'center',
+      height: 35,
+      justifyContent: 'center',
+    },
+    venmoButtonText: {
+      color: '#fff',
+      fontWeight: '600',
+      fontSize: 14,
+      lineHeight: 14,
+    },
+    dateContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 4,
     },
   });
 

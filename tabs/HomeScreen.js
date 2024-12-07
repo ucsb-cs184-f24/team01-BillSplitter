@@ -1,6 +1,6 @@
 // HomeScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, RefreshControl, Dimensions } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, RefreshControl, Dimensions, Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import firebase from '../firebaseConfig';
 import { categories } from '../components/CategorySelector';
@@ -78,7 +78,9 @@ const HomeScreen = ({ navigation }) => {
           category: billData.category || 'other',
           createdBy: billData.createdBy,
           creatorName: billData.createdBy === currentUser.uid ? 'You' : (creatorData.displayName || creatorData.email),
+          creatorVenmoUsername: creatorData.venmoUsername || null,
           createdAt: billData.createdAt?.toDate() || new Date(),
+          paidAt: payment.paidAt,
           pendingUsers: pendingUsersData.map(p => p.name),
           pendingAmounts: pendingUsersData.map(p => p.amount),
           totalPending,
@@ -141,6 +143,20 @@ const HomeScreen = ({ navigation }) => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const unsubscribeFocus = navigation.addListener('focus', () => {
+      // Force TabView layout refresh
+      setIndex(index);
+      
+      // Small delay to ensure proper layout
+      setTimeout(() => {
+        setIndex(index);
+      }, 100);
+    });
+
+    return unsubscribeFocus;
+  }, [navigation, index]);
+
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     await fetchPayments();
@@ -169,6 +185,9 @@ const HomeScreen = ({ navigation }) => {
             currentUser={currentUser}
             onPress={() => navigation.navigate('BillDetails', { billId: item.billId })}
             onPaymentPress={handlePayment}
+            creatorId={item.createdBy}
+            billTitle={item.billTitle}
+            paymentId={item.id}
           />
         )}
         keyExtractor={item => item.id}
@@ -243,7 +262,7 @@ const HomeScreen = ({ navigation }) => {
         {loading ? (
           <Text style={styles.loading}>Loading payments...</Text>
         ) : (
-          <>
+          <View style={styles.contentContainer}>
             <View style={styles.tabContainer}>
               <TabView
                 navigationState={{ index, routes }}
@@ -261,7 +280,7 @@ const HomeScreen = ({ navigation }) => {
             >
               <Text style={styles.addButtonText}>Add New Bill</Text>
             </TouchableOpacity>
-          </>
+          </View>
         )}
       </View>
     </SafeAreaView>
@@ -392,6 +411,8 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flex: 1,
+    position: 'relative',
+    zIndex: 0,
   },
   addButton: {
     backgroundColor: '#34C759',
@@ -399,11 +420,18 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     margin: 20,
     alignItems: 'center',
+    position: 'relative',
+    zIndex: 2,
   },
   addButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  contentContainer: {
+    flex: 1,
+    position: 'relative',
+    zIndex: 1,
   },
 });
 

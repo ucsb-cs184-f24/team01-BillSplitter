@@ -15,6 +15,7 @@ import FriendsScreen from './tabs/FriendsScreen';
 import SettingsScreen from './tabs/SettingsScreen';
 import BillDetailsScreen from './tabs/BillDetailsScreen';
 import PastBillsScreen from './tabs/PastBillsScreen';
+import VenmoPaymentScreen from './tabs/VenmoPaymentScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -121,6 +122,11 @@ export default function App() {
             <Stack.Screen 
               name="PastBills" 
               component={PastBillsScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+              name="VenmoPayment" 
+              component={VenmoPaymentScreen}
               options={{ headerShown: false }}
             />
           </>
