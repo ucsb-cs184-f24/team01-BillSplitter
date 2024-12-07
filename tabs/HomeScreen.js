@@ -23,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
     { key: 'unpaid', title: 'Unpaid' },
     { key: 'created', title: 'Created' },
     { key: 'received', title: 'Received' },
-    { key: 'past', title: 'Past' },
+    { key: 'past', title: 'Completed' },
   ]);
   
   const currentUser = firebase.auth().currentUser;
@@ -92,14 +92,13 @@ const HomeScreen = ({ navigation }) => {
       
       const unpaidBills = paymentsData
         .filter(payment => 
-          (!payment.isCreator && payment.status === 'pending') ||
-          (payment.isCreator && payment.totalPending > 0)
+          (!payment.isCreator && payment.status === 'pending')
         )
         .sort((a, b) => b.createdAt - a.createdAt);
 
       const createdBills = paymentsData
         .filter(payment => 
-          payment.isCreator && payment.totalPending === 0
+          payment.isCreator
         )
         .sort((a, b) => b.createdAt - a.createdAt);
 
