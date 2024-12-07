@@ -13,17 +13,7 @@
     },
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-        "LSApplicationQueriesSchemes": [
-          "venmo"
-        ],
-        "CFBundleURLTypes": [
-          {
-            "CFBundleURLSchemes": ["venmo"]
-          }
-        ]
-      }
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -33,7 +23,6 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "scheme": "venmo"
+    }
   }
 }

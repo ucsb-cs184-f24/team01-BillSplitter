@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '500',
   },
-  changeImageButton: {
+  hangeImageButton: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'center',

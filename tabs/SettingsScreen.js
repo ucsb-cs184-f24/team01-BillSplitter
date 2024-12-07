@@ -136,7 +136,7 @@ const SettingsScreen = ({ navigation }) => {
             subtitle={userProfile?.venmoUsername || 'Not set'}
             onPress={() => setIsVenmoModalVisible(true)}
           />
-        </SettingsGroup>
+                  </SettingsGroup>
 
         <SettingsGroup title="Bills">
         <SettingsItem
@@ -150,12 +150,6 @@ const SettingsScreen = ({ navigation }) => {
             title="Friends"
             subtitle="Manage your friends list"
             onPress={() => navigation.navigate('Friends')}
-          />
-          <SettingsItem
-            icon="credit-card"
-            title="Venmo Test"
-            subtitle="Test Venmo integration"
-            onPress={() => navigation.navigate('VenmoTest')}
           />
         </SettingsGroup>
 
@@ -181,7 +175,6 @@ const SettingsScreen = ({ navigation }) => {
           Bill Splitting App © 2024
         </Text>
       </ScrollView>
-      
       <VenmoUsernameModal
         visible={isVenmoModalVisible}
         onClose={() => setIsVenmoModalVisible(false)}

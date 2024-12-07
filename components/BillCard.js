@@ -35,8 +35,7 @@ const BillCard = ({
       return 'Received';
     }
     if (item.status === 'paid') {
-      const date = item.paidAt?.toDate();
-      return `Paid${date ? ` on ${date.toLocaleDateString()}` : ''}`;
+      return 'You paid';
     }
     return 'You owe';
   };
@@ -46,6 +45,21 @@ const BillCard = ({
       return item.totalPending > 0 ? '#FF9500' : '#34C759';
     }
     return item.status === 'paid' ? '#34C759' : '#FF3B30';  
+  };
+
+  const renderAmountText = () => {
+    if (item.isCreator) {
+      return (
+        <Text style={styles.createdBy}>
+          Requested by {item.creatorName}
+        </Text>
+      );
+    }
+    return (
+      <Text style={styles.createdBy}>
+        {item.status === 'paid' ? 'Paid to' : 'You owe'} {item.creatorName}
+      </Text>
+    );
   };
 
   const getPendingText = (totalPending, pendingUsers) => {
@@ -93,16 +107,22 @@ const BillCard = ({
           ) : null}
           
           <View style={styles.paymentFooter}>
-            <Text style={styles.date}>
-              Creation Date: {item.createdAt.toLocaleDateString()}
-            </Text>
+            {item.isCreator ? (
+              <Text style={styles.createdBy}>
+                Requested by {item.creatorName}
+              </Text>
+            ) : (
+              <Text style={styles.createdBy}>
+                {item.status === 'paid' ? 'Paid to' : 'You owe'} {item.creatorName}
+              </Text>
+            )}
             <Text style={[styles.status, { color: getStatusColor() }]} numberOfLines={2}>
               {renderStatus()}
             </Text>
           </View>
           
-          <Text style={styles.createdBy}>
-            Creator: {item.creatorName}
+          <Text style={styles.date}>
+            {item.createdAt.toLocaleDateString()}
           </Text>
           
           {!item.isCreator && item.status === 'pending' && (
@@ -203,28 +223,14 @@ const styles = StyleSheet.create({
       color: '#999',
     },
     payButton: {
-      flex: 1,
-      padding: 8,
+      padding: 10,
       borderRadius: 8,
+      marginTop: 10,
       alignItems: 'center',
-      height: 35,
-      justifyContent: 'center',
     },
     payButtonText: {
       color: '#fff',
       fontWeight: '600',
-      fontSize: 14,
-      lineHeight: 14,
-    },
-    buttonContainer: {
-      flexDirection: 'row',
-      gap: 10,
-      marginTop: 8,
-      alignItems: 'center',
-    },
-    venmoWrapper: {
-      flex: 1,
-      marginTop: 0,
     },
     venmoButton: {
       flex: 1,

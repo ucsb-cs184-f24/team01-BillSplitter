@@ -1,6 +1,6 @@
 // HomeScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, RefreshControl, Dimensions } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, RefreshControl, Dimensions, Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import firebase from '../firebaseConfig';
 import { categories } from '../components/CategorySelector';
@@ -23,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
     { key: 'unpaid', title: 'Unpaid' },
     { key: 'created', title: 'Created' },
     { key: 'received', title: 'Received' },
-    { key: 'settled', title: 'Settled' },
+    { key: 'past', title: 'Past' },
   ]);
   
   const currentUser = firebase.auth().currentUser;
@@ -68,10 +68,6 @@ const HomeScreen = ({ navigation }) => {
         const creatorDoc = await db.collection('users').doc(billData.createdBy).get();
         const creatorData = creatorDoc.data();
 
-        // Get creator's Venmo username from user object
-        const creatorUserDoc = await db.collection('users').doc(billData.createdBy).get();
-        const creatorUserData = creatorUserDoc.data();
-
         return {
           id: doc.id,
           ...payment,
@@ -82,8 +78,9 @@ const HomeScreen = ({ navigation }) => {
           category: billData.category || 'other',
           createdBy: billData.createdBy,
           creatorName: billData.createdBy === currentUser.uid ? 'You' : (creatorData.displayName || creatorData.email),
-          creatorVenmoUsername: creatorUserData?.venmoUsername || null,
+          creatorVenmoUsername: creatorData.venmoUsername || null,
           createdAt: billData.createdAt?.toDate() || new Date(),
+          paidAt: payment.paidAt,
           pendingUsers: pendingUsersData.map(p => p.name),
           pendingAmounts: pendingUsersData.map(p => p.amount),
           totalPending,
@@ -101,11 +98,15 @@ const HomeScreen = ({ navigation }) => {
         .sort((a, b) => b.createdAt - a.createdAt);
 
       const createdBills = paymentsData
-        .filter(payment => payment.isCreator)
+        .filter(payment => 
+          payment.isCreator && payment.totalPending === 0
+        )
         .sort((a, b) => b.createdAt - a.createdAt);
 
       const receivedBills = paymentsData
-        .filter(payment => !payment.isCreator)
+        .filter(payment => 
+          !payment.isCreator && payment.status === 'paid'
+        )
         .sort((a, b) => b.createdAt - a.createdAt);
 
       const pastBills = paymentsData
@@ -238,7 +239,7 @@ const HomeScreen = ({ navigation }) => {
     unpaid: UnpaidBills,
     created: CreatedBills,
     received: ReceivedBills,
-    settled: PastBills,
+    past: PastBills,
   });
 
   const renderTabBar = props => (
