@@ -23,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
     { key: 'unpaid', title: 'Unpaid' },
     { key: 'created', title: 'Created' },
     { key: 'received', title: 'Received' },
-    { key: 'past', title: 'Completed' },
+    { key: 'past', title: 'Past' },
   ]);
   
   const currentUser = firebase.auth().currentUser;
