@@ -16,6 +16,8 @@ import SettingsScreen from './tabs/SettingsScreen';
 import BillDetailsScreen from './tabs/BillDetailsScreen';
 import PastBillsScreen from './tabs/PastBillsScreen';
 import VenmoPaymentScreen from './tabs/VenmoPaymentScreen';
+import SpendingInsightsScreen from './tabs/SpendingInsights';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -127,6 +129,11 @@ export default function App() {
             <Stack.Screen 
               name="VenmoPayment" 
               component={VenmoPaymentScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+              name="SpendingInsights" 
+              component={SpendingInsightsScreen}
               options={{ headerShown: false }}
             />
           </>

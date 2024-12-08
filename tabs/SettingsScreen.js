@@ -145,6 +145,14 @@ const SettingsScreen = ({ navigation }) => {
             subtitle="View your bill history"
             onPress={() => navigation.navigate('PastBills')}
           />
+
+        <SettingsItem
+          icon="file-text"
+          title="Spending Insights"
+          subtitle="View your spending insights"
+          onPress={() => navigation.navigate('SpendingInsights')}
+        />
+        
           <SettingsItem
             icon="users"
             title="Friends"
