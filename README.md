@@ -29,7 +29,7 @@ see: https://reactnative.dev/docs/set-up-your-environment for more in-depth guid
 * 1. Navigate to the project directory:
   > cd better-bill-splitter
 * 2. Install project dependencies:
-  > yarn install 
+  > yarn install --legacy peer deps
 * 3. Start the development server:
   > yarn start
 * 4. To run on iPhone: Scan the QR code displayed in the terminal with your phone's camera. Open the app in Expo Go (ensure your phone and computer are on the same Wi-Fi network).
