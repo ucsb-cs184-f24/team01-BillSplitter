@@ -17,7 +17,7 @@ View the history of all split bills, categorized as sent or received. Use it to 
 ## Environment
 see: https://reactnative.dev/docs/set-up-your-environment for more in-depth guide
 * 1. clone repo:
-  > git clone https://github.com/your-repo-name/better-bill-splitter.git](https://github.com/ucsb-cs184-f24/team01-BillSplitter.git
+  > git clone https://github.com/ucsb-cs184-f24/team01-BillSplitter.git
 * 2. Install dependencies:
   > brew install node
   > brew install watchman
@@ -27,7 +27,7 @@ see: https://reactnative.dev/docs/set-up-your-environment for more in-depth guid
 * 5. For running on an iPhone: download the Expo Go app
 ## Running the app
 * 1. Navigate to the project directory:
-  > cd better-bill-splitter
+  > cd team01-BillSplitter 
 * 2. Install project dependencies:
   > yarn install --legacy peer deps
 * 3. Start the development server:
